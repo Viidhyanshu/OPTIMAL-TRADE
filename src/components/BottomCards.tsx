@@ -1,85 +1,62 @@
 'use client';
 
 import React from 'react';
-import { ArrowUpRight, ArrowDownLeft, FileText, Activity } from 'lucide-react';
 
 export const BottomCards: React.FC = () => {
+  const recentTransactions = [
+    { label: 'Slice #28 Executed (2,840 shares)', time: '15:21 IST', price: '₹3,074.80' },
+    { label: 'Slice #27 Executed (2,840 shares)', time: '15:08 IST', price: '₹3,066.40' },
+    { label: 'Slice #26 Executed (2,840 shares)', time: '14:53 IST', price: '₹3,058.00' },
+  ];
+
+  const marketHighlights = [
+    { symbol: 'RELIANCE', name: 'Reliance Ind.', price: '₹3,048.20', change: '+1.42%' },
+    { symbol: 'TCS', name: 'Tata Consultancy', price: '₹4,218.50', change: '+0.88%' },
+    { symbol: 'NIFTY50', name: 'NIFTY Index', price: '₹24,438.50', change: '+0.65%' },
+  ];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-      {/* Card 1: Recent transactions */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Recent Transactions Card */}
       <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-slate-300 text-sm">Recent transactions</h4>
-          <span className="text-[10px] text-slate-500 font-mono">View All</span>
+          <h3 className="font-bold text-white text-base">Recent Execution Slices</h3>
+          <span className="text-[11px] text-slate-400 font-mono">NSE Feed</span>
         </div>
-        <div className="space-y-2 text-xs">
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#181924] border border-white/5">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-emerald-950/80 text-emerald-400">
-                <ArrowDownLeft className="w-3.5 h-3.5" />
-              </div>
-              <div>
-                <span className="font-bold text-white block">Bought BTC</span>
-                <span className="text-[10px] text-slate-500">TWAP Slice #12</span>
-              </div>
-            </div>
-            <div className="text-right">
-              <span className="font-bold text-emerald-400 block">+0.012 BTC</span>
-              <span className="text-[10px] text-slate-500">€1,208.50</span>
-            </div>
-          </div>
 
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#181924] border border-white/5">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-blue-950/80 text-blue-400">
-                <ArrowUpRight className="w-3.5 h-3.5" />
+        <div className="space-y-2">
+          {recentTransactions.map((tx, idx) => (
+            <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-[#181924] border border-white/5 text-xs">
+              <div className="truncate pr-2">
+                <span className="font-medium text-white block truncate">{tx.label}</span>
+                <span className="text-[10px] text-slate-400">{tx.time}</span>
               </div>
-              <div>
-                <span className="font-bold text-white block">Sold ETH</span>
-                <span className="text-[10px] text-slate-500">Almgren-Chriss</span>
-              </div>
+              <span className="font-mono font-bold text-white shrink-0">{tx.price}</span>
             </div>
-            <div className="text-right">
-              <span className="font-bold text-slate-300 block">-0.45 ETH</span>
-              <span className="text-[10px] text-slate-500">€1,444.00</span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Card 2: Market Dynamics */}
+      {/* Market Highlights Card */}
       <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-slate-300 text-sm">Market</h4>
-          <span className="text-[10px] text-slate-500 font-mono">Microstructure</span>
+          <h3 className="font-bold text-white text-base">NIFTY 50 Benchmark Equities</h3>
+          <span className="text-[11px] text-slate-400 font-mono">Live Prices</span>
         </div>
-        <div className="space-y-2 text-xs">
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#181924] border border-white/5">
-            <span className="text-slate-400">Baseline Volatility (&sigma;)</span>
-            <span className="font-mono font-bold text-white">1.50%</span>
-          </div>
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#181924] border border-white/5">
-            <span className="text-slate-400">Bid-Ask Spread</span>
-            <span className="font-mono font-bold text-emerald-400">5.0 bps</span>
-          </div>
-        </div>
-      </div>
 
-      {/* Card 3: Articles / Strategy Insights */}
-      <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-slate-300 text-sm">Articles</h4>
-          <span className="text-[10px] text-slate-500 font-mono">Research</span>
-        </div>
-        <div className="space-y-2 text-xs">
-          <div className="p-2 rounded-xl bg-[#181924] border border-white/5 space-y-1">
-            <span className="font-bold text-white block text-[11px]">
-              Almgren-Chriss Framework for Institutional Execution
-            </span>
-            <p className="text-[10px] text-slate-400">
-              Balancing temporary vs permanent market impact against volatility risk.
-            </p>
-          </div>
+        <div className="space-y-2">
+          {marketHighlights.map((m, idx) => (
+            <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-[#181924] border border-white/5 text-xs">
+              <div>
+                <span className="font-bold text-white font-mono block">{m.symbol}</span>
+                <span className="text-[10px] text-slate-400">{m.name}</span>
+              </div>
+              <div className="text-right font-mono">
+                <span className="font-bold text-white block">{m.price}</span>
+                <span className="text-[10px] text-[#10b981] font-bold">{m.change}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
