@@ -16,6 +16,7 @@ import { EfficientFrontierChart } from '@/components/EfficientFrontierChart';
 import { BottomCards } from '@/components/BottomCards';
 import { SolutionsView } from '@/components/SolutionsView';
 import { ControlPanel } from '@/components/ControlPanel';
+import { KaggleDataImporter } from '@/components/KaggleDataImporter';
 import { Footer } from '@/components/Footer';
 import { CustomDataModal } from '@/components/CustomDataModal';
 import { FileUp, BookOpen } from 'lucide-react';
@@ -23,15 +24,25 @@ import { FileUp, BookOpen } from 'lucide-react';
 export default function OptimalTradeApp() {
   const [config, setConfig] = useState<OrderConfig>(DEFAULT_CONFIG);
   const [seed, setSeed] = useState<number>(42);
+  const [selectedStockSymbol, setSelectedStockSymbol] = useState<string>('RELIANCE');
   const [activeNavTab, setActiveNavTab] = useState<string>('Dashboard');
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
 
   const simulationResult = useMemo(() => {
-    return runFullSimulation(config, seed);
-  }, [config, seed]);
+    return runFullSimulation(config, seed, selectedStockSymbol);
+  }, [config, seed, selectedStockSymbol]);
 
   const handleRunSimulation = () => {
     setSeed(Math.floor(Math.random() * 100000));
+  };
+
+  const handleSelectIndianStock = (symbol: string, basePrice: number) => {
+    setSelectedStockSymbol(symbol);
+    setConfig((prev) => ({
+      ...prev,
+      symbol,
+      arrivalPrice: basePrice,
+    }));
   };
 
   const handleToggleShock = () => {
@@ -61,6 +72,13 @@ export default function OptimalTradeApp() {
             <SolutionsView tab={activeNavTab} />
           ) : (
             <>
+              {/* Row 0: Kaggle Indian Stock Data Importer */}
+              <KaggleDataImporter
+                selectedStockSymbol={selectedStockSymbol}
+                onSelectStock={handleSelectIndianStock}
+                onImportCSV={(text) => handleRunSimulation()}
+              />
+
               {/* Row 1: Hero Chart + Quick Swap */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
