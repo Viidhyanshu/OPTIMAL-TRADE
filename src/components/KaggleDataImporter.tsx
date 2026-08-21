@@ -30,8 +30,8 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
   });
 
   return (
-    <div className="apple-glass-panel rounded-3xl p-6 space-y-4">
-      {/* Main Selection Controls */}
+    <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-4">
+      {/* Main Selection Controls: Company Dropdown Menu + Timeframe Selector */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Company Dropdown Menu Button */}
         <div className="md:col-span-2 relative">
@@ -41,16 +41,16 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
 
           <button
             onClick={() => setIsOpenMenu(!isOpenMenu)}
-            className="w-full flex items-center justify-between p-3.5 rounded-2xl apple-glass-pill hover:border-white/20 text-white font-medium text-xs transition duration-200 shadow-xl cursor-pointer active:scale-95"
+            className="w-full flex items-center justify-between p-3 rounded-xl bg-[#181924] border border-white/10 hover:border-white/20 text-white font-medium text-xs transition shadow-lg"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-white via-slate-100 to-slate-300 text-black font-black flex items-center justify-center text-xs font-mono shrink-0 shadow">
+              <div className="w-8 h-8 rounded-lg bg-white text-black font-extrabold flex items-center justify-center text-xs font-mono shrink-0">
                 {activeCompany.symbol.slice(0, 3)}
               </div>
               <div className="text-left">
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-white text-sm font-mono">{activeCompany.symbol}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 backdrop-blur-md">
+                  <span className="font-bold text-white text-sm font-mono">{activeCompany.symbol}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300">
                     {activeCompany.sector}
                   </span>
                 </div>
@@ -64,16 +64,17 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
 
           {/* Expanded Company Dropdown Menu */}
           {isOpenMenu && (
-            <div className="absolute top-full left-0 right-0 mt-2 z-50 apple-liquid-glass rounded-3xl p-5 shadow-2xl space-y-3">
+            <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-[#141520] border border-white/10 rounded-2xl p-4 shadow-2xl backdrop-blur-2xl space-y-3 animate-fadeIn">
+              {/* Search Bar & Sector Tabs */}
               <div className="space-y-2">
                 <div className="relative">
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     placeholder="Search 16 NIFTY 50 companies (e.g. TCS, Reliance, Infosys)..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full apple-glass-pill rounded-xl pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-white/30"
+                    className="w-full bg-[#1c1e2b] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-white/20"
                   />
                 </div>
 
@@ -82,10 +83,10 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
                     <button
                       key={sec}
                       onClick={() => setSelectedSector(sec)}
-                      className={`px-3 py-1 rounded-full border transition cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-lg border transition ${
                         selectedSector === sec
-                          ? 'bg-white text-black font-extrabold shadow'
-                          : 'apple-glass-pill text-slate-400 hover:text-white'
+                          ? 'bg-white text-black font-bold'
+                          : 'bg-[#181924] border-white/5 text-slate-400 hover:text-white'
                       }`}
                     >
                       {sec}
@@ -95,7 +96,7 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
               </div>
 
               {/* Company List Scroll Area */}
-              <div className="max-h-60 overflow-y-auto space-y-1.5 pr-1">
+              <div className="max-h-60 overflow-y-auto space-y-1 pr-1">
                 {filteredCompanies.map((c) => {
                   const isSelected = selectedStockSymbol === c.symbol;
 
@@ -106,20 +107,20 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
                         onSelectStock(c.symbol, c.basePrice);
                         setIsOpenMenu(false);
                       }}
-                      className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-left transition ${
                         isSelected
-                          ? 'bg-white text-black border-white font-extrabold shadow-lg'
-                          : 'apple-glass-pill text-slate-300 hover:text-white hover:bg-white/10'
+                          ? 'bg-white text-black border-white font-bold'
+                          : 'bg-[#181924] border-white/5 text-slate-300 hover:text-white hover:bg-white/5'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5">
                         <span className="font-bold font-mono text-xs w-20 shrink-0">{c.symbol}</span>
                         <div className="truncate text-xs">
                           <span className="block truncate">{c.name}</span>
                           <span className="text-[10px] opacity-70">{c.sector} • {c.exchange}</span>
                         </div>
                       </div>
-                      <div className="text-right font-mono text-xs shrink-0 font-bold">
+                      <div className="text-right font-mono text-xs shrink-0">
                         ₹{c.basePrice.toLocaleString()}
                       </div>
                     </button>
@@ -136,14 +137,14 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
             Select Kaggle Timeframe:
           </label>
 
-          <div className="grid grid-cols-4 gap-1.5 p-1.5 apple-glass-pill rounded-2xl">
+          <div className="grid grid-cols-4 gap-1.5 p-1 rounded-xl bg-[#181924] border border-white/10">
             {(['1D', '7D', '1M', '1Y'] as TimeframePeriod[]).map((tf) => (
               <button
                 key={tf}
                 onClick={() => onSelectTimeframe(tf)}
-                className={`py-2 text-xs font-black rounded-xl transition cursor-pointer active:scale-95 ${
+                className={`py-2 text-xs font-bold rounded-lg transition ${
                   selectedTimeframe === tf
-                    ? 'bg-white text-black shadow-lg scale-[1.02]'
+                    ? 'bg-white text-black shadow'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -151,7 +152,7 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
               </button>
             ))}
           </div>
-          <span className="text-[10px] text-slate-500 font-mono mt-1.5 block">
+          <span className="text-[10px] text-slate-500 font-mono mt-1 block">
             {selectedTimeframe === '1D' ? '30 Intraday Slices (NSE Session)' : selectedTimeframe === '7D' ? '7 Trading Days' : selectedTimeframe === '1M' ? '30 Days Period' : '52 Weeks Horizon'}
           </span>
         </div>
