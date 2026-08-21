@@ -64,6 +64,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 
   return (
     <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-5">
+      {/* Header Row */}
       <div className="flex items-center justify-between border-b border-white/5 pb-3">
         <div className="flex items-center gap-2">
           <Sliders className="w-5 h-5 text-white" />
@@ -84,40 +85,40 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <button
             onClick={() => applyPreset('NORMAL')}
-            className={`px-3 py-1.5 text-xs rounded-xl border transition ${
+            className={`px-3 py-2 text-xs rounded-xl border transition ${
               !config.enableShock
-                ? 'bg-white text-black border-white font-bold'
-                : 'bg-[#181924] border-white/5 text-slate-400 hover:text-white'
+                ? 'bg-white text-black border-white font-bold shadow'
+                : 'bg-[#181924] border-white/5 text-slate-300 hover:text-white'
             }`}
           >
             Normal Market
           </button>
           <button
             onClick={() => applyPreset('HIGH_VOLATILITY')}
-            className={`px-3 py-1.5 text-xs rounded-xl border transition ${
+            className={`px-3 py-2 text-xs rounded-xl border transition ${
               config.enableShock && config.shockVolatilityMultiplier >= 4.0
-                ? 'bg-white text-black border-white font-bold'
-                : 'bg-[#181924] border-white/5 text-slate-400 hover:text-white'
+                ? 'bg-white text-black border-white font-bold shadow'
+                : 'bg-[#181924] border-white/5 text-slate-300 hover:text-white'
             }`}
           >
             High Volatility
           </button>
           <button
             onClick={() => applyPreset('THIN_LIQUIDITY')}
-            className={`px-3 py-1.5 text-xs rounded-xl border transition ${
+            className={`px-3 py-2 text-xs rounded-xl border transition ${
               config.enableShock && config.shockLiquidityDrop >= 0.7
-                ? 'bg-white text-black border-white font-bold'
-                : 'bg-[#181924] border-white/5 text-slate-400 hover:text-white'
+                ? 'bg-white text-black border-white font-bold shadow'
+                : 'bg-[#181924] border-white/5 text-slate-300 hover:text-white'
             }`}
           >
             Thin Liquidity
           </button>
           <button
             onClick={() => applyPreset('SEVERE_SHOCK')}
-            className={`px-3 py-1.5 text-xs rounded-xl border transition ${
+            className={`px-3 py-2 text-xs rounded-xl border transition ${
               config.enableShock && config.shockInterval === 15
-                ? 'bg-amber-950 border-amber-600 text-amber-300 font-bold'
-                : 'bg-[#181924] border-white/5 text-slate-400 hover:text-white'
+                ? 'bg-white text-black border-white font-bold shadow'
+                : 'bg-[#181924] border-white/5 text-slate-300 hover:text-white'
             }`}
           >
             Mid-Way Shock ⚡
@@ -133,7 +134,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           <div className="flex rounded-xl overflow-hidden border border-white/5 bg-[#181924] p-1">
             <button
               onClick={() => handleChange('side', 'BUY')}
-              className={`flex-1 py-1 text-xs font-bold rounded-lg transition ${
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${
                 config.side === 'BUY'
                   ? 'bg-emerald-600 text-white shadow'
                   : 'text-slate-400 hover:text-white'
@@ -143,7 +144,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             </button>
             <button
               onClick={() => handleChange('side', 'SELL')}
-              className={`flex-1 py-1 text-xs font-bold rounded-lg transition ${
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${
                 config.side === 'SELL'
                   ? 'bg-rose-600 text-white shadow'
                   : 'text-slate-400 hover:text-white'
@@ -161,7 +162,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             type="number"
             value={config.totalQuantity}
             onChange={(e) => handleChange('totalQuantity', Math.max(1000, Number(e.target.value)))}
-            className="w-full bg-[#181924] border border-white/5 rounded-xl px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/20"
+            className="w-full bg-[#181924] border border-white/5 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-white/20"
           />
         </div>
 
@@ -173,7 +174,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             step="0.5"
             value={config.arrivalPrice}
             onChange={(e) => handleChange('arrivalPrice', Number(e.target.value))}
-            className="w-full bg-[#181924] border border-white/5 rounded-xl px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/20"
+            className="w-full bg-[#181924] border border-white/5 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-white/20"
           />
         </div>
 
@@ -186,14 +187,15 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             max="60"
             value={config.totalIntervals}
             onChange={(e) => handleChange('totalIntervals', Number(e.target.value))}
-            className="w-full bg-[#181924] border border-white/5 rounded-xl px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/20"
+            className="w-full bg-[#181924] border border-white/5 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-white/20"
           />
         </div>
       </div>
 
       {/* Advanced Risk & Shock Controls */}
       <div className="pt-2 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2 bg-[#181924] p-3 rounded-xl border border-white/5">
+        {/* Risk Aversion Slider */}
+        <div className="space-y-2 bg-[#181924] p-3.5 rounded-xl border border-white/5">
           <div className="flex justify-between items-center text-xs">
             <span className="text-slate-300 font-medium flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-white" />
@@ -216,7 +218,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           </div>
         </div>
 
-        <div className="space-y-2 bg-[#181924] p-3 rounded-xl border border-white/5">
+        {/* Shock Controls */}
+        <div className="space-y-2 bg-[#181924] p-3.5 rounded-xl border border-white/5">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-300 font-medium flex items-center gap-1.5">
               <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
@@ -229,7 +232,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                 onChange={(e) => handleChange('enableShock', e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-9 h-5 bg-[#222433] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600"></div>
+              <div className="w-9 h-5 bg-[#252838] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-white"></div>
             </label>
           </div>
 
@@ -243,7 +246,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                   max={config.totalIntervals - 2}
                   value={config.shockInterval}
                   onChange={(e) => handleChange('shockInterval', Number(e.target.value))}
-                  className="w-full bg-[#12131a] border border-white/5 rounded px-1.5 py-0.5 text-white font-mono"
+                  className="w-full bg-[#12131a] border border-white/5 rounded px-2 py-1 text-white font-mono"
                 />
               </div>
               <div>
@@ -253,7 +256,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                   step="0.5"
                   value={config.shockVolatilityMultiplier}
                   onChange={(e) => handleChange('shockVolatilityMultiplier', Number(e.target.value))}
-                  className="w-full bg-[#12131a] border border-white/5 rounded px-1.5 py-0.5 text-white font-mono"
+                  className="w-full bg-[#12131a] border border-white/5 rounded px-2 py-1 text-white font-mono"
                 />
               </div>
               <div>
@@ -263,7 +266,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                   step="0.5"
                   value={config.shockSpreadMultiplier}
                   onChange={(e) => handleChange('shockSpreadMultiplier', Number(e.target.value))}
-                  className="w-full bg-[#12131a] border border-white/5 rounded px-1.5 py-0.5 text-white font-mono"
+                  className="w-full bg-[#12131a] border border-white/5 rounded px-2 py-1 text-white font-mono"
                 />
               </div>
             </div>
