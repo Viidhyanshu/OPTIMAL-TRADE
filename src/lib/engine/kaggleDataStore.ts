@@ -32,6 +32,10 @@ export const KAGGLE_COMPANIES_LIST: CompanyMetadata[] = [
 
 /**
  * Generates multi-timeframe Kaggle market data for any Indian company across 1D, 7D, 1M, 1Y
+ * Computing exact User-Specified Liquidity Indicators:
+ * A. Bid-Ask Spread: spread_t = ask_price_t - bid_price_t, relative_spread_t = spread_t / mid_price_t
+ * B. Market Depth: depth_t = bid_size_t + ask_size_t
+ * D. Volume Proxy: liquidity_score_t = volume_t / average_volume (trailing window)
  */
 export function getKaggleCompanyData(
   symbol: string,
@@ -43,29 +47,38 @@ export function getKaggleCompanyData(
 } {
   const company = KAGGLE_COMPANIES_LIST.find((c) => c.symbol === symbol) || KAGGLE_COMPANIES_LIST[0];
 
-  // Determine interval count and time labels based on timeframe
   let intervalsCount = 30;
-  let labelPrefix = '';
-
   switch (timeframe) {
     case '1D':
-      intervalsCount = 30; // 30 intraday intervals (09:15 - 15:30 IST)
+      intervalsCount = 30;
       break;
     case '7D':
-      intervalsCount = 28; // 4 intervals per day for 7 trading days
+      intervalsCount = 28;
       break;
     case '1M':
-      intervalsCount = 30; // 30 daily records
+      intervalsCount = 30;
       break;
     case '1Y':
-      intervalsCount = 32; // 32 weekly snapshot records
+      intervalsCount = 32;
       break;
   }
 
-  const marketData: MarketIntervalData[] = [];
-  let currentPrice = company.basePrice;
+  // Calculate average baseline volume per interval across the trailing window
+  const avgMarketVolume = Math.round(company.volume / intervalsCount);
 
-  // Pseudo-random deterministic walk for Kaggle time-series records
+  const rawSteps: {
+    interval: number;
+    timeLabel: string;
+    midPrice: number;
+    bidPrice: number;
+    askPrice: number;
+    spread: number;
+    marketVolume: number;
+    volatility: number;
+    isShockActive: boolean;
+  }[] = [];
+
+  let currentPrice = company.basePrice;
   let s = (symbol.charCodeAt(0) * 100 + timeframe.charCodeAt(0)) % 2147483647;
   const rand = () => {
     s = (s * 16807) % 2147483647;
@@ -76,24 +89,22 @@ export function getKaggleCompanyData(
 
   for (let i = 1; i <= intervalsCount; i++) {
     const isShock = config.enableShock && i >= Math.floor(intervalsCount / 2);
-
     const currentVol = volatility * (isShock ? config.shockVolatilityMultiplier : 1.0);
     const spreadBps = 4.0 * (isShock ? config.shockSpreadMultiplier : 1.0);
 
-    // Intraday volume curve
     const normT = (i - 1) / (intervalsCount - 1);
     const uCurve = 1.0 + 0.75 * Math.cos(2 * Math.PI * (normT - 0.5));
-    const marketVolume = Math.round((company.volume / intervalsCount) * uCurve * (isShock ? 0.65 : 1.0) * (0.9 + 0.2 * rand()));
+    const marketVolume = Math.round(avgMarketVolume * uCurve * (isShock ? (1.0 - config.shockLiquidityDrop) : 1.0) * (0.9 + 0.2 * rand()));
 
-    // Random walk with drift
     const z = (rand() + rand() + rand() - 1.5) * 1.6;
     const priceMove = currentPrice * (currentVol * z / Math.sqrt(intervalsCount));
     currentPrice = Math.max(10.0, currentPrice + priceMove);
 
-    const spread = Number(((currentPrice * spreadBps) / 10000).toFixed(2));
     const midPrice = Number(currentPrice.toFixed(2));
+    const spread = Number(((midPrice * spreadBps) / 10000).toFixed(2));
+    const bidPrice = Number((midPrice - spread / 2).toFixed(2));
+    const askPrice = Number((midPrice + spread / 2).toFixed(2));
 
-    // Time Label generation based on selected timeframe
     let timeLabel = '';
     if (timeframe === '1D') {
       const mins = Math.floor(((i - 1) / intervalsCount) * 375);
@@ -111,19 +122,72 @@ export function getKaggleCompanyData(
       timeLabel = `Wk ${i}`;
     }
 
-    marketData.push({
+    rawSteps.push({
       interval: i,
       timeLabel,
       midPrice,
-      bidPrice: Number((midPrice - spread / 2).toFixed(2)),
-      askPrice: Number((midPrice + spread / 2).toFixed(2)),
+      bidPrice,
+      askPrice,
       spread,
       marketVolume,
       volatility: Number(currentVol.toFixed(4)),
-      liquidityDepth: Math.round(marketVolume * 1.6),
       isShockActive: isShock,
     });
   }
+
+  // Compute User-Specified Liquidity Indicators over trailing window
+  const marketData: MarketIntervalData[] = rawSteps.map((step, idx) => {
+    // Formula A: Bid-Ask Spread & Relative Spread
+    // spread_t = ask_price_t - bid_price_t
+    // relative_spread_t = spread_t / mid_price_t
+    const spread_t = Number((step.askPrice - step.bidPrice).toFixed(3));
+    const relative_spread_t = Number((spread_t / step.midPrice).toFixed(6));
+    const relativeSpreadBps = Number((relative_spread_t * 10000).toFixed(2));
+
+    // Formula B: Market Depth / Order Book Size (Top of Book)
+    // depth_t = bid_size_t + ask_size_t
+    const bidSize = Math.round(step.marketVolume * 0.46);
+    const askSize = Math.round(step.marketVolume * 0.54);
+    const orderBookDepth = bidSize + askSize;
+
+    // Formula D: Volume-based Liquidity Proxy (Trailing Window)
+    // trailing window average volume (past 5 steps)
+    const startIdx = Math.max(0, idx - 4);
+    const trailingSlice = rawSteps.slice(startIdx, idx + 1);
+    const trailingAvgVol = trailingSlice.reduce((acc, r) => acc + r.marketVolume, 0) / trailingSlice.length;
+
+    // liquidity_score_t = volume_t / average_volume (trailing window)
+    const volumeLiquidityScore = Number((step.marketVolume / Math.max(1, trailingAvgVol)).toFixed(2));
+
+    // Composite Liquidity Status Indicator
+    let liquidityStatus: 'HIGH' | 'MODERATE' | 'ILLIQUID' = 'HIGH';
+    if (volumeLiquidityScore < 0.65 || relativeSpreadBps > 25.0 || step.isShockActive) {
+      liquidityStatus = 'ILLIQUID';
+    } else if (volumeLiquidityScore < 0.95 || relativeSpreadBps > 15.0) {
+      liquidityStatus = 'MODERATE';
+    }
+
+    return {
+      interval: step.interval,
+      timeLabel: step.timeLabel,
+      midPrice: step.midPrice,
+      bidPrice: step.bidPrice,
+      askPrice: step.askPrice,
+      spread: spread_t,
+      relativeSpread: relative_spread_t,
+      relativeSpreadBps,
+      bidSize,
+      askSize,
+      orderBookDepth,
+      marketVolume: step.marketVolume,
+      avgMarketVolume: Math.round(trailingAvgVol),
+      volumeLiquidityScore,
+      liquidityStatus,
+      volatility: step.volatility,
+      liquidityDepth: Math.round(orderBookDepth * 0.8),
+      isShockActive: step.isShockActive,
+    };
+  });
 
   return { company, marketData };
 }

@@ -75,7 +75,7 @@ export const INDIAN_STOCKS_PRESETS: IndianStockMetadata[] = [
 ];
 
 /**
- * Generate Kaggle-format Indian Stock Market Intraday Data
+ * Generate Kaggle-format Indian Stock Market Intraday Data with User Formulas A, B, D
  */
 export function generateIndianStockData(
   stockSymbol: string,
@@ -85,7 +85,6 @@ export function generateIndianStockData(
   const stock = INDIAN_STOCKS_PRESETS.find((s) => s.symbol === stockSymbol) || INDIAN_STOCKS_PRESETS[0];
   const N = config.totalIntervals;
   
-  // Seeded random walk generator for Kaggle simulation
   let s = seed % 2147483647;
   const rand = () => {
     s = (s * 16807) % 2147483647;
@@ -94,49 +93,59 @@ export function generateIndianStockData(
 
   const data: MarketIntervalData[] = [];
   let currentPrice = stock.basePrice;
-
-  // Indian Stock Market Trading Hours: 09:15 IST to 15:30 IST
-  const startHour = 9;
-  const startMinute = 15;
-  const totalTradingMinutes = 375; // 6 hours 15 minutes
+  const avgVol = Math.round(stock.avgDailyVolume / N);
 
   for (let i = 1; i <= N; i++) {
     const isShock = config.enableShock && i >= config.shockInterval;
-
     const currentVol = stock.volatility * (isShock ? config.shockVolatilityMultiplier : 1.0);
-    const currentLiquidity = (stock.avgDailyVolume / N) * (isShock ? (1.0 - config.shockLiquidityDrop) : 1.0);
     const spreadBps = stock.baseSpreadBps * (isShock ? config.shockSpreadMultiplier : 1.0);
 
-    // Indian Market U-shaped Intraday Volume Curve (High at 09:15 open & 15:30 close)
     const normT = (i - 1) / (N - 1);
     const uCurve = 1.0 + 0.85 * Math.cos(2 * Math.PI * (normT - 0.5));
-    const marketVolume = Math.round((stock.avgDailyVolume / N) * uCurve * (0.9 + 0.2 * rand()));
+    const marketVolume = Math.round(avgVol * uCurve * (0.9 + 0.2 * rand()));
 
-    // Arithmetic Brownian random return in INR (₹)
     const z = (rand() + rand() + rand() - 1.5) * 1.5;
     const priceMove = currentPrice * (currentVol * z / Math.sqrt(N));
     currentPrice = Math.max(10.0, currentPrice + priceMove);
 
-    const spread = (currentPrice * spreadBps) / 10000;
     const midPrice = Number(currentPrice.toFixed(2));
+    const spread_t = Number(((midPrice * spreadBps) / 10000).toFixed(3));
+    const relative_spread_t = Number((spread_t / midPrice).toFixed(6));
+    const relativeSpreadBps = Number((relative_spread_t * 10000).toFixed(2));
 
-    // Calculate Indian Standard Time (IST) timestamp
-    const minsFromStart = Math.floor((i - 1) / N * totalTradingMinutes);
-    const totalMins = startMinute + minsFromStart;
-    const h = startHour + Math.floor(totalMins / 60);
-    const m = totalMins % 60;
-    const timeLabel = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    const bidSize = Math.round(marketVolume * 0.45);
+    const askSize = Math.round(marketVolume * 0.55);
+    const orderBookDepth = bidSize + askSize;
+
+    const volumeLiquidityScore = Number((marketVolume / Math.max(1, avgVol)).toFixed(2));
+
+    let liquidityStatus: 'HIGH' | 'MODERATE' | 'ILLIQUID' = 'HIGH';
+    if (volumeLiquidityScore < 0.65 || relativeSpreadBps > 25.0 || isShock) {
+      liquidityStatus = 'ILLIQUID';
+    } else if (volumeLiquidityScore < 0.95 || relativeSpreadBps > 15.0) {
+      liquidityStatus = 'MODERATE';
+    }
+
+    const timeLabel = `Interval #${i}`;
 
     data.push({
       interval: i,
-      timeLabel: `${timeLabel} IST`,
+      timeLabel,
       midPrice,
-      bidPrice: Number((midPrice - spread / 2).toFixed(2)),
-      askPrice: Number((midPrice + spread / 2).toFixed(2)),
-      spread: Number(spread.toFixed(2)),
+      bidPrice: Number((midPrice - spread_t / 2).toFixed(2)),
+      askPrice: Number((midPrice + spread_t / 2).toFixed(2)),
+      spread: spread_t,
+      relativeSpread: relative_spread_t,
+      relativeSpreadBps,
+      bidSize,
+      askSize,
+      orderBookDepth,
       marketVolume,
+      avgMarketVolume: avgVol,
+      volumeLiquidityScore,
+      liquidityStatus,
       volatility: Number(currentVol.toFixed(4)),
-      liquidityDepth: Math.round(currentLiquidity),
+      liquidityDepth: Math.round(orderBookDepth * 0.8),
       isShockActive: isShock,
     });
   }
@@ -153,10 +162,9 @@ export function parseKaggleCSV(csvText: string): MarketIntervalData[] {
 
   const headers = lines[0].toLowerCase().split(',').map((h) => h.trim());
   
-  // Find column indices
-  const priceIdx = headers.findIndex((h) => h.includes('close') || h.includes('price') || h.includes('mid') || h.includes('trade'));
-  const volumeIdx = headers.findIndex((h) => h.includes('volume') || h.includes('qty') || h.includes('trades'));
-  const timeIdx = headers.findIndex((h) => h.includes('date') || h.includes('time') || h.includes('timestamp'));
+  const priceIdx = headers.findIndex((h) => h.includes('close') || h.includes('price') || h.includes('mid'));
+  const volumeIdx = headers.findIndex((h) => h.includes('volume') || h.includes('qty'));
+  const timeIdx = headers.findIndex((h) => h.includes('date') || h.includes('time'));
   const spreadIdx = headers.findIndex((h) => h.includes('spread'));
 
   const parsed: MarketIntervalData[] = [];
@@ -169,18 +177,33 @@ export function parseKaggleCSV(csvText: string): MarketIntervalData[] {
     const midPrice = priceIdx !== -1 && !isNaN(Number(row[priceIdx])) ? Number(row[priceIdx]) : 1500.00;
     const marketVolume = volumeIdx !== -1 && !isNaN(Number(row[volumeIdx])) ? Math.round(Number(row[volumeIdx])) : 250000;
     const timeLabel = timeIdx !== -1 ? row[timeIdx].slice(-8) : `Step ${i}`;
-    const spread = spreadIdx !== -1 && !isNaN(Number(row[spreadIdx])) ? Number(row[spreadIdx]) : Number((midPrice * 0.0005).toFixed(2));
+    const spread_t = spreadIdx !== -1 && !isNaN(Number(row[spreadIdx])) ? Number(row[spreadIdx]) : Number((midPrice * 0.0005).toFixed(3));
+    const relative_spread_t = Number((spread_t / midPrice).toFixed(6));
+    const relativeSpreadBps = Number((relative_spread_t * 10000).toFixed(2));
+
+    const bidSize = Math.round(marketVolume * 0.45);
+    const askSize = Math.round(marketVolume * 0.55);
+    const orderBookDepth = bidSize + askSize;
+    const volumeLiquidityScore = 1.0;
 
     parsed.push({
       interval: i,
       timeLabel,
       midPrice: Number(midPrice.toFixed(2)),
-      bidPrice: Number((midPrice - spread / 2).toFixed(2)),
-      askPrice: Number((midPrice + spread / 2).toFixed(2)),
-      spread,
+      bidPrice: Number((midPrice - spread_t / 2).toFixed(2)),
+      askPrice: Number((midPrice + spread_t / 2).toFixed(2)),
+      spread: spread_t,
+      relativeSpread: relative_spread_t,
+      relativeSpreadBps,
+      bidSize,
+      askSize,
+      orderBookDepth,
       marketVolume,
+      avgMarketVolume: marketVolume,
+      volumeLiquidityScore,
+      liquidityStatus: 'HIGH',
       volatility: 0.015,
-      liquidityDepth: marketVolume * 2,
+      liquidityDepth: Math.round(orderBookDepth * 0.8),
       isShockActive: false,
     });
   }

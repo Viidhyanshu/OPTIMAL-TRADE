@@ -22,10 +22,18 @@ export interface MarketIntervalData {
   midPrice: number;
   bidPrice: number;
   askPrice: number;
-  spread: number;
-  marketVolume: number;
+  spread: number;                // spread_t = ask_price_t - bid_price_t
+  relativeSpread: number;        // relative_spread_t = spread_t / mid_price_t
+  relativeSpreadBps: number;     // relative spread in basis points (bps)
+  bidSize: number;               // bid_size_t
+  askSize: number;               // ask_size_t
+  orderBookDepth: number;        // depth_t = bid_size_t + ask_size_t
+  marketVolume: number;          // volume_t
+  avgMarketVolume: number;       // trailing average volume
+  volumeLiquidityScore: number;  // liquidity_score_t = volume_t / average_volume
+  liquidityStatus: 'HIGH' | 'MODERATE' | 'ILLIQUID'; // Liquidity Signal Indicator
   volatility: number;
-  liquidityDepth: number; // Shares available per $1 price move
+  liquidityDepth: number;
   isShockActive: boolean;
 }
 
@@ -50,7 +58,7 @@ export interface StrategyResult {
   steps: ExecutionStep[];
   totalExecutedQuantity: number;
   avgExecutionPrice: number;
-  implementationShortfall: number; // In currency ($)
+  implementationShortfall: number; // In currency (₹)
   implementationShortfallBps: number; // In basis points
   spreadCostTotal: number;
   impactCostTotal: number;

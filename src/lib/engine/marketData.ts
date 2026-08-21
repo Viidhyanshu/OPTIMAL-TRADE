@@ -1,84 +1,79 @@
 import { MarketIntervalData, OrderConfig } from './types';
 
-// Pseudo-random seed generator for deterministic yet realistic simulations
-function seededRandom(seed: number): () => number {
+/**
+ * Geometric Brownian Motion generator with intraday U-shaped volume profile & user liquidity indicators
+ */
+export function generateMarketData(config: OrderConfig, seed: number = 42): MarketIntervalData[] {
+  const N = config.totalIntervals;
+  const basePrice = config.arrivalPrice;
+  const avgDailyVolume = 500000;
+  const avgVolPerInterval = Math.round(avgDailyVolume / N);
+  const baseVolatility = 0.015;
+
   let s = seed % 2147483647;
-  if (s <= 0) s += 2147483646;
-  return () => {
+  const rand = () => {
     s = (s * 16807) % 2147483647;
     return (s - 1) / 2147483646;
   };
-}
 
-// Box-Muller transform for Gaussian random numbers
-function randomGaussian(randFn: () => number): number {
-  let u = 0, v = 0;
-  while (u === 0) u = randFn();
-  while (v === 0) v = randFn();
-  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-}
-
-export function generateMarketData(config: OrderConfig, seed: number = 42): MarketIntervalData[] {
-  const rand = seededRandom(seed);
   const data: MarketIntervalData[] = [];
-  
-  const N = config.totalIntervals;
-  const initialPrice = config.arrivalPrice;
-  const baseVolatility = 0.015; // 1.5% annual volatility per slice
-  const baseSpread = initialPrice * 0.0005; // 5 bps initial spread
-  const baseLiquidity = 250000; // Base market depth
-
-  let currentPrice = initialPrice;
-
-  // Generate 30 intervals simulating a 6.5 hour trading day (approx 13-min slices)
-  const startHour = 9;
-  const startMinute = 30;
+  let currentPrice = basePrice;
 
   for (let i = 1; i <= N; i++) {
-    // Check if shock is active
     const isShock = config.enableShock && i >= config.shockInterval;
 
-    // Volatility and Liquidity adjustments
     const currentVol = baseVolatility * (isShock ? config.shockVolatilityMultiplier : 1.0);
-    const currentLiquidity = baseLiquidity * (isShock ? (1.0 - config.shockLiquidityDrop) : 1.0);
-    const currentSpreadMultiplier = isShock ? config.shockSpreadMultiplier : 1.0;
+    const spreadBps = 5.0 * (isShock ? config.shockSpreadMultiplier : 1.0);
 
-    // U-shaped intraday volume profile: V(t) = Base * (1 + 0.7 * cos(2*pi*(t - N/2)/N))
-    const normalizedTime = (i - 1) / (N - 1);
-    const uCurve = 1.0 + 0.7 * Math.cos(2 * Math.PI * (normalizedTime - 0.5));
-    const marketVolume = Math.round(50000 * uCurve * (isShock ? 0.6 : 1.0) * (0.9 + 0.2 * rand()));
+    const normT = (i - 1) / (N - 1);
+    const uCurve = 1.0 + 0.8 * Math.cos(2 * Math.PI * (normT - 0.5));
+    const marketVolume = Math.round(avgVolPerInterval * uCurve * (isShock ? (1.0 - config.shockLiquidityDrop) : 1.0) * (0.9 + 0.2 * rand()));
 
-    // Random walk with drift and jump during shock
-    const shockJump = (isShock && i === config.shockInterval) ? (config.side === 'BUY' ? 0.012 : -0.012) : 0;
-    const returnZ = randomGaussian(rand);
-    const priceChange = currentPrice * (currentVol * returnZ / Math.sqrt(N) + shockJump);
-    
-    currentPrice = Math.max(1.0, currentPrice + priceChange);
+    const z = (rand() + rand() + rand() - 1.5) * 1.5;
+    const priceMove = currentPrice * (currentVol * z / Math.sqrt(N));
+    currentPrice = Math.max(1.0, currentPrice + priceMove);
 
-    // Bid-Ask Spread calculation
-    const spreadNoise = (rand() - 0.5) * 0.2 * baseSpread;
-    const spread = Math.max(0.01, baseSpread * currentSpreadMultiplier + spreadNoise);
-    const bidPrice = Number((currentPrice - spread / 2).toFixed(4));
-    const askPrice = Number((currentPrice + spread / 2).toFixed(4));
-    const midPrice = Number(currentPrice.toFixed(4));
+    const midPrice = Number(currentPrice.toFixed(2));
+    const spread_t = Number(((midPrice * spreadBps) / 10000).toFixed(3));
+    const relative_spread_t = Number((spread_t / midPrice).toFixed(6));
+    const relativeSpreadBps = Number((relative_spread_t * 10000).toFixed(2));
 
-    // Time label calculation
-    const totalMinutesFromStart = Math.floor(((i - 1) / N) * 390); // 390 mins in trading day
-    const minuteVal = startMinute + totalMinutesFromStart;
-    const h = startHour + Math.floor(minuteVal / 60);
-    const m = minuteVal % 60;
-    const timeLabel = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    const bidSize = Math.round(marketVolume * 0.45);
+    const askSize = Math.round(marketVolume * 0.55);
+    const orderBookDepth = bidSize + askSize;
+
+    const volumeLiquidityScore = Number((marketVolume / Math.max(1, avgVolPerInterval)).toFixed(2));
+
+    let liquidityStatus: 'HIGH' | 'MODERATE' | 'ILLIQUID' = 'HIGH';
+    if (volumeLiquidityScore < 0.65 || relativeSpreadBps > 25.0 || isShock) {
+      liquidityStatus = 'ILLIQUID';
+    } else if (volumeLiquidityScore < 0.95 || relativeSpreadBps > 15.0) {
+      liquidityStatus = 'MODERATE';
+    }
+
+    const startMinute = 15 + Math.floor(((i - 1) / N) * 375);
+    const h = 9 + Math.floor(startMinute / 60);
+    const m = startMinute % 60;
+    const timeLabel = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} IST`;
 
     data.push({
       interval: i,
       timeLabel,
       midPrice,
-      bidPrice,
-      askPrice,
-      spread: Number(spread.toFixed(4)),
+      bidPrice: Number((midPrice - spread_t / 2).toFixed(2)),
+      askPrice: Number((midPrice + spread_t / 2).toFixed(2)),
+      spread: spread_t,
+      relativeSpread: relative_spread_t,
+      relativeSpreadBps,
+      bidSize,
+      askSize,
+      orderBookDepth,
       marketVolume,
+      avgMarketVolume: avgVolPerInterval,
+      volumeLiquidityScore,
+      liquidityStatus,
       volatility: Number(currentVol.toFixed(4)),
-      liquidityDepth: Math.round(currentLiquidity),
+      liquidityDepth: Math.round(orderBookDepth * 0.8),
       isShockActive: isShock,
     });
   }
@@ -86,12 +81,14 @@ export function generateMarketData(config: OrderConfig, seed: number = 42): Mark
   return data;
 }
 
-export function calculateMarketVWAP(data: MarketIntervalData[]): number {
-  let totalPV = 0;
-  let totalV = 0;
-  for (const d of data) {
-    totalPV += d.midPrice * d.marketVolume;
-    totalV += d.marketVolume;
+export function calculateMarketVWAP(marketData: MarketIntervalData[]): number {
+  let totalVolume = 0;
+  let totalVolumePrice = 0;
+
+  for (const m of marketData) {
+    totalVolume += m.marketVolume;
+    totalVolumePrice += m.midPrice * m.marketVolume;
   }
-  return totalV > 0 ? Number((totalPV / totalV).toFixed(4)) : 0;
+
+  return totalVolume > 0 ? Number((totalVolumePrice / totalVolume).toFixed(4)) : 0;
 }

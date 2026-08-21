@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { SimulationResult, StrategyType } from '@/lib/engine/types';
-import { Table, Zap, FileSpreadsheet } from 'lucide-react';
+import { Table, Zap, Droplets } from 'lucide-react';
 
 interface TradeTableProps {
   result: SimulationResult;
@@ -51,7 +51,7 @@ export const TradeTable: React.FC<TradeTableProps> = ({ result }) => {
         </div>
       </div>
 
-      {/* Execution Log Table */}
+      {/* Execution Log Table with User Formulas A, B, and D */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs text-slate-300">
           <thead className="bg-[#181924] text-[10px] uppercase tracking-wider text-slate-400 font-mono border-b border-white/5">
@@ -59,13 +59,14 @@ export const TradeTable: React.FC<TradeTableProps> = ({ result }) => {
               <th className="py-3 px-3">Interval</th>
               <th className="py-3 px-3">Time</th>
               <th className="py-3 px-3">Mid Price</th>
-              <th className="py-3 px-3">Bid/Ask Spread</th>
-              <th className="py-3 px-3">Target Qty</th>
-              <th className="py-3 px-3">Executed Qty</th>
+              <th className="py-3 px-3">Spread (A)</th>
+              <th className="py-3 px-3">Rel Spread (bps)</th>
+              <th className="py-3 px-3">Book Depth (B)</th>
+              <th className="py-3 px-3">Liquidity Score (D)</th>
+              <th className="py-3 px-3">Exec Qty</th>
               <th className="py-3 px-3">Exec Price</th>
               <th className="py-3 px-3">Impact Cost (₹)</th>
-              <th className="py-3 px-3">Slippage (bps)</th>
-              <th className="py-3 px-3 text-center">Shock</th>
+              <th className="py-3 px-3">Slippage</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5 font-mono text-[11px]">
@@ -81,8 +82,22 @@ export const TradeTable: React.FC<TradeTableProps> = ({ result }) => {
                   <td className="py-2.5 px-3 font-semibold text-white">#{step.interval}</td>
                   <td className="py-2.5 px-3 text-slate-400">{step.timeLabel}</td>
                   <td className="py-2.5 px-3 text-slate-200">₹{market.midPrice?.toFixed(2)}</td>
-                  <td className="py-2.5 px-3 text-slate-400">₹{market.spread?.toFixed(3)}</td>
-                  <td className="py-2.5 px-3 text-slate-300">{step.targetQuantity.toLocaleString()}</td>
+                  <td className="py-2.5 px-3 text-slate-400">₹{market.spread?.toFixed(2)}</td>
+                  <td className="py-2.5 px-3 text-cyan-400 font-semibold">{market.relativeSpreadBps} bps</td>
+                  <td className="py-2.5 px-3 text-purple-300">{market.orderBookDepth?.toLocaleString()}</td>
+                  <td className="py-2.5 px-3">
+                    <span
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                        market.liquidityStatus === 'HIGH'
+                          ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/50'
+                          : market.liquidityStatus === 'MODERATE'
+                          ? 'bg-amber-950 text-amber-300 border border-amber-800/50'
+                          : 'bg-rose-950 text-rose-300 border border-rose-800/50'
+                      }`}
+                    >
+                      {market.volumeLiquidityScore}x ({market.liquidityStatus})
+                    </span>
+                  </td>
                   <td className="py-2.5 px-3 font-bold text-white">{step.executedQuantity.toLocaleString()}</td>
                   <td className="py-2.5 px-3 font-semibold text-white">₹{step.executionPrice.toFixed(2)}</td>
                   <td className="py-2.5 px-3 text-amber-400 font-semibold">₹{step.totalStepCost.toLocaleString()}</td>
@@ -91,17 +106,7 @@ export const TradeTable: React.FC<TradeTableProps> = ({ result }) => {
                       step.slippageBps > 0 ? 'text-rose-400' : 'text-emerald-400'
                     }`}
                   >
-                    {step.slippageBps > 0 ? `+${step.slippageBps}` : step.slippageBps}
-                  </td>
-                  <td className="py-2.5 px-3 text-center">
-                    {isShock ? (
-                      <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-300 text-[9px] font-bold border border-amber-800/50 inline-flex items-center gap-1">
-                        <Zap className="w-2.5 h-2.5 fill-amber-300" />
-                        SHOCK
-                      </span>
-                    ) : (
-                      <span className="text-slate-600">—</span>
-                    )}
+                    {step.slippageBps > 0 ? `+${step.slippageBps}` : step.slippageBps} bps
                   </td>
                 </tr>
               );

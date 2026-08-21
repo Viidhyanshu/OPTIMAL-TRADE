@@ -8,6 +8,7 @@ import { Header } from '@/components/Header';
 import { MainHeroChartCard } from '@/components/MainHeroChartCard';
 import { AssetsTableCard } from '@/components/AssetsTableCard';
 import { RepartitionPieCard } from '@/components/RepartitionPieCard';
+import { LiquidityIndicatorsCard } from '@/components/LiquidityIndicatorsCard';
 import { PriceTrajectoryChart } from '@/components/PriceTrajectoryChart';
 import { SliceBreakdownChart } from '@/components/SliceBreakdownChart';
 import { TradeTable } from '@/components/TradeTable';
@@ -45,7 +46,7 @@ export default function OptimalTradeApp() {
     <div className="min-h-screen bg-[#07080c] text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6">
       {/* Outer Main Container Card */}
       <div className="max-w-7xl mx-auto bg-[#0c0d12] border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden">
-        {/* Simplified Header Navbar */}
+        {/* Header Navbar */}
         <Header />
 
         {/* Main Content Body */}
@@ -70,7 +71,10 @@ export default function OptimalTradeApp() {
             onRunSimulation={handleRunSimulation}
           />
 
-          {/* Row 3: Price Trajectory & Efficient Frontier */}
+          {/* Row 3: User-Specified Liquidity Indicators Component (Formulas A, B, and D) */}
+          <LiquidityIndicatorsCard result={simulationResult} />
+
+          {/* Row 4: Price Trajectory & Efficient Frontier */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <PriceTrajectoryChart result={simulationResult} />
@@ -80,7 +84,7 @@ export default function OptimalTradeApp() {
             </div>
           </div>
 
-          {/* Row 4: Assets Table + Repartition Pie */}
+          {/* Row 5: Assets Table + Repartition Pie */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <AssetsTableCard result={simulationResult} />
@@ -90,13 +94,13 @@ export default function OptimalTradeApp() {
             </div>
           </div>
 
-          {/* Row 5: Bottom Grid Cards (Recent Transactions, Market) */}
+          {/* Row 6: Bottom Grid Cards (Recent Transactions, Market) */}
           <BottomCards />
 
-          {/* Row 6: Trade Slicing Distribution Bar Chart */}
+          {/* Row 7: Trade Slicing Distribution Bar Chart */}
           <SliceBreakdownChart result={simulationResult} />
 
-          {/* Row 7: Granular Execution Log Table */}
+          {/* Row 8: Granular Execution Log Table */}
           <TradeTable result={simulationResult} />
         </div>
 
