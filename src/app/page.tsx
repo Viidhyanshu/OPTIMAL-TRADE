@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { DEFAULT_CONFIG, runFullSimulation } from '@/lib/engine/runner';
 import { OrderConfig } from '@/lib/engine/types';
 import { TimeframePeriod } from '@/lib/engine/kaggleDataStore';
@@ -26,6 +26,26 @@ export default function OptimalTradeApp() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<TimeframePeriod>('1D');
   const [activeNavTab, setActiveNavTab] = useState<string>('Dashboard');
 
+  // Mouse Parallax Offset State
+  const [parallaxOffset, setParallaxOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const { innerWidth, innerHeight } = window;
+      const normX = (e.clientX / innerWidth - 0.5) * 2; // -1 to +1
+      const normY = (e.clientY / innerHeight - 0.5) * 2; // -1 to +1
+
+      // 35px maximum parallax shift on mouse movement
+      setParallaxOffset({
+        x: normX * 35,
+        y: normY * 35,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   const simulationResult = useMemo(() => {
     return runFullSimulation(config, seed, selectedStockSymbol, selectedTimeframe);
   }, [config, seed, selectedStockSymbol, selectedTimeframe]);
@@ -45,11 +65,21 @@ export default function OptimalTradeApp() {
 
   return (
     <div className="min-h-screen bg-black text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6 relative overflow-hidden">
-      {/* Dynamic Animated White Noise Shader Dots Overlay Layer */}
-      <div className="fixed pointer-events-none opacity-50 mix-blend-screen z-50 bg-repeat bg-noise-shader animate-noise-shader" />
+      {/* Interactive Mouse Parallax White Noise Shader Overlay Layer */}
+      <div
+        className="fixed inset-0 pointer-events-none opacity-45 mix-blend-screen z-50 bg-repeat bg-noise-shader transition-transform duration-200 ease-out"
+        style={{
+          transform: `translate3d(${parallaxOffset.x}px, ${parallaxOffset.y}px, 0) scale(1.1)`,
+        }}
+      />
 
-      {/* Subtle Monochrome Ambient Radial Lighting Glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-white/15 via-slate-800/5 to-transparent blur-3xl pointer-events-none z-0" />
+      {/* Subtle Monochrome Ambient Radial Lighting Glow with Parallax */}
+      <div
+        className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-white/15 via-slate-800/5 to-transparent blur-3xl pointer-events-none z-0 transition-transform duration-300 ease-out"
+        style={{
+          transform: `translate3d(${parallaxOffset.x * 0.5}px, ${parallaxOffset.y * 0.5}px, 0)`,
+        }}
+      />
 
       {/* Outer Main Container Card - Sleek Monochrome Dark Black */}
       <div className="max-w-7xl mx-auto bg-[#0a0b10]/95 border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden relative z-10">
