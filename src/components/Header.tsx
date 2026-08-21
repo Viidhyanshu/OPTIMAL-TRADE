@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, ShieldAlert } from 'lucide-react';
+import { ShieldAlert, GitBranch } from 'lucide-react';
 
 interface HeaderProps {
   activeNavTab: string;
@@ -33,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Right Floating Translucent Glass Navbar */}
       <div className="flex items-center">
         <div className="flex items-center gap-1 sm:gap-2 p-1.5 rounded-2xl bg-[#151722]/80 border border-white/10 backdrop-blur-xl shadow-2xl">
-          {(['Solutions', 'Features', 'Services', 'Pricing'] as const).map((tab) => (
+          {(['Dashboard', 'Solutions', 'Features', 'Services', 'Pricing'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveNavTab(tab)}
@@ -47,16 +47,15 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           ))}
 
-          {/* Black Pill Button: Get Started */}
-          <button
-            onClick={() => setActiveNavTab('Dashboard')}
-            className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-black hover:bg-slate-950 text-white font-medium text-xs border border-white/10 shadow-lg transition transform active:scale-95 ml-2"
+          <a
+            href="https://github.com/Viidhyanshu/OPTIMAL-TRADE.git"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white transition"
           >
-            <span>Get Started</span>
-            <div className="w-4 h-4 rounded-full bg-white text-black flex items-center justify-center font-bold text-[10px]">
-              <ArrowRight className="w-2.5 h-2.5 stroke-[3]" />
-            </div>
-          </button>
+            <GitBranch className="w-3.5 h-3.5 text-cyan-400" />
+            <span>GitHub</span>
+          </a>
         </div>
       </div>
     </header>
