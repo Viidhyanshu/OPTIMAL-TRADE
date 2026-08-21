@@ -36,23 +36,19 @@ const vertexShader = `
   uniform float uWaveRatio;
   uniform float uSwell;
   uniform float uTurbulence;
-  uniform vec2 uMouse;
-  uniform float uParallaxStrength;
-  uniform bool uMouseInteraction;
 
   varying vec2 vUv;
   varying float vElevation;
 
-  // Simplex 3D Noise helper
   vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
   vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
 
   float snoise(vec3 v){
-    const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+    const vec2  C = vec2(1.0/6.0, 1.0/3.0);
     const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
 
-    vec3 i  = floor(v + dot(v, C.yyy) );
-    vec3 x0 = v - i + dot(i, C.xxx) ;
+    vec3 i  = floor(v + dot(v, C.yyy));
+    vec3 x0 = v - i + dot(i, C.xxx);
 
     vec3 g = step(x0.yzx, x0.xyz);
     vec3 l = 1.0 - g;
@@ -113,14 +109,7 @@ const vertexShader = `
     vec3 pos = position;
 
     float t = uTime * uSpeed;
-    vec2 p = uv * uWaveScale * 10.0;
-
-    vec2 mouseOffset = vec2(0.0);
-    if (uMouseInteraction) {
-      mouseOffset = (uMouse - 0.5) * uParallaxStrength * 2.0;
-    }
-
-    p += mouseOffset;
+    vec2 p = uv * uWaveScale * 12.0;
 
     float wave1 = sin(p.x * uWaveRatio + t) * cos(p.y + t * 0.8) * uAmplitude;
     float wave2 = snoise(vec3(p * (uTurbulence * 0.05), t * 0.5)) * (uSwell * 0.1);
@@ -158,7 +147,6 @@ const fragmentShader = `
     float crestVal = smoothstep(1.5, 3.5, vElevation);
     color = mix(color, uCrestColor, crestVal);
 
-    // Depth fog
     float fog = smoothstep(0.0, uFogDepth, gl_FragCoord.z / gl_FragCoord.w);
     color = mix(color, uHorizonColor, fog * 0.4);
 
@@ -190,8 +178,6 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
   detail = 'medium',
   brightness = 1,
   opacity = 1,
-  mouseInteraction = true,
-  parallaxStrength = 0.5,
   grain = true,
   grainIntensity = 0.05,
   className = '',
@@ -200,7 +186,6 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
-  const mousePos = useRef<{ x: number; y: number }>({ x: 0.5, y: 0.5 });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -210,8 +195,8 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
     const heightPx = container.clientHeight || window.innerHeight;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / heightPx, 0.1, 1000);
-    camera.position.set(0, -height, 10 / zoom);
+    const camera = new THREE.PerspectiveCamera(50, width / heightPx, 0.1, 1000);
+    camera.position.set(0, -height, 12 / zoom);
     camera.rotation.x = tilt;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -222,7 +207,7 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
     container.appendChild(renderer.domElement);
 
     const segments = detail === 'high' ? 128 : detail === 'medium' ? 64 : 32;
-    const geometry = new THREE.PlaneGeometry(30, 30, segments, segments);
+    const geometry = new THREE.PlaneGeometry(60, 60, segments, segments);
 
     const uniforms = {
       uTime: { value: 0 },
@@ -232,9 +217,6 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
       uWaveRatio: { value: waveRatio },
       uSwell: { value: swell },
       uTurbulence: { value: turbulence },
-      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-      uParallaxStrength: { value: parallaxStrength },
-      uMouseInteraction: { value: mouseInteraction },
       uHorizonColor: { value: new THREE.Color(horizonColor) },
       uWaveColor: { value: new THREE.Color(waveColor) },
       uCrestColor: { value: new THREE.Color(crestColor) },
@@ -262,7 +244,6 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
 
     const render = () => {
       uniforms.uTime.value = clock.getElapsedTime();
-      uniforms.uMouse.value.set(mousePos.current.x, mousePos.current.y);
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(render);
     };
@@ -271,32 +252,18 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
 
     const handleResize = () => {
       if (!container || !renderer) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
+      const w = container.clientWidth || window.innerWidth;
+      const h = container.clientHeight || window.innerHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      mousePos.current = {
-        x: (e.clientX - rect.left) / rect.width,
-        y: (e.clientY - rect.top) / rect.height,
-      };
-    };
-
     window.addEventListener('resize', handleResize);
-    if (mouseInteraction) {
-      window.addEventListener('mousemove', handleMouseMove);
-    }
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
-      if (mouseInteraction) {
-        window.removeEventListener('mousemove', handleMouseMove);
-      }
       if (renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
@@ -306,7 +273,6 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
     };
   }, [detail]);
 
-  // Update uniforms dynamically
   useEffect(() => {
     if (!materialRef.current) return;
     const u = materialRef.current.uniforms;
@@ -316,8 +282,6 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
     u.uWaveRatio.value = waveRatio;
     u.uSwell.value = swell;
     u.uTurbulence.value = turbulence;
-    u.uParallaxStrength.value = parallaxStrength;
-    u.uMouseInteraction.value = mouseInteraction;
     u.uHorizonColor.value.set(horizonColor);
     u.uWaveColor.value.set(waveColor);
     u.uCrestColor.value.set(crestColor);
@@ -333,8 +297,6 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
     waveRatio,
     swell,
     turbulence,
-    parallaxStrength,
-    mouseInteraction,
     horizonColor,
     waveColor,
     crestColor,
@@ -348,7 +310,7 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full h-full relative overflow-hidden ${className}`}
+      className={`w-full h-full min-h-screen relative overflow-hidden ${className}`}
       style={style}
     />
   );
