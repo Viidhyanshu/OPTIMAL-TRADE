@@ -10,12 +10,12 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = () => {
   return (
     <footer className="w-full relative mt-16 pt-16 pb-8 overflow-hidden">
-      {/* Ambient Soft Cyan/Blue Aura */}
-      <div className="absolute top-4 right-12 sm:right-1/4 w-72 sm:w-[450px] h-72 sm:h-[450px] rounded-full bg-gradient-to-br from-cyan-400/20 via-blue-600/10 to-transparent blur-3xl pointer-events-none" />
+      {/* Ambient Golden Yellow Lighting Aura */}
+      <div className="absolute top-4 right-12 sm:right-1/4 w-72 sm:w-[450px] h-72 sm:h-[450px] rounded-full bg-gradient-to-br from-amber-400/20 via-yellow-600/10 to-transparent blur-3xl pointer-events-none" />
 
-      {/* Elegant Non-Bold Thin Indian Rupee (₹) Symbol in exact position of circle */}
+      {/* Golden Yellow Semi-Bold Indian Rupee (₹) Symbol */}
       <div className="absolute top-2 right-8 sm:right-1/4 w-72 sm:w-[360px] h-72 sm:h-[360px] flex items-center justify-center pointer-events-none hidden md:flex z-0">
-        <span className="text-[280px] sm:text-[340px] font-extralight leading-none bg-clip-text text-transparent bg-gradient-to-br from-cyan-300/35 via-blue-400/25 to-indigo-600/10 drop-shadow-[0_0_50px_rgba(6,182,212,0.25)] font-sans select-none">
+        <span className="text-[280px] sm:text-[340px] font-bold leading-none bg-clip-text text-transparent bg-gradient-to-br from-amber-300/50 via-yellow-500/35 to-amber-700/15 drop-shadow-[0_0_50px_rgba(245,158,11,0.3)] font-sans select-none">
           ₹
         </span>
       </div>
@@ -78,7 +78,7 @@ export const Footer: React.FC<FooterProps> = () => {
                     href="https://github.com/Viidhyanshu/OPTIMAL-TRADE.git"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-white transition flex items-center gap-1.5 text-cyan-400"
+                    className="hover:text-white transition flex items-center gap-1.5 text-amber-400"
                   >
                     <GitBranch className="w-3.5 h-3.5" />
                     <span>GitHub</span>
