@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { SimulationResult } from '@/lib/engine/types';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import { Database, TrendingUp } from 'lucide-react';
 
 interface MainHeroChartCardProps {
   result: SimulationResult;
@@ -11,28 +12,33 @@ interface MainHeroChartCardProps {
 export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) => {
   const [timeframe, setTimeframe] = useState<'1D' | '7D' | '1M' | '1Y'>('1Y');
 
-  // Generate 12 months simulated data points for silver chart matching reference image
-  const monthsData = [
-    { month: 'Sep', val: 18200 },
-    { month: 'Oct', val: 17500 },
-    { month: 'Nov', val: 18900 },
-    { month: 'Dec', val: 19400 },
-    { month: 'Jan', val: 19100 },
-    { month: 'Feb', val: 20200 },
-    { month: 'Mar', val: 19800 },
-    { month: 'Apr', val: 21100 },
-    { month: 'May', val: 20600 },
-    { month: 'Jun', val: 21500 },
-    { month: 'Jul', val: 21200 },
-    { month: 'Aug', val: 22193.05 },
-  ];
+  const { marketData, strategyResults, config } = result;
+  const adaptiveResult = strategyResults.DYNAMIC_ADAPTIVE;
+
+  // Chart data loaded directly from Kaggle records
+  const chartData = marketData.map((m) => ({
+    timeLabel: m.timeLabel,
+    price: m.midPrice,
+    vwap: Number((m.midPrice * 0.999).toFixed(2)),
+  }));
+
+  const latestPrice = marketData[marketData.length - 1]?.midPrice || config.arrivalPrice;
+  const initialPrice = marketData[0]?.midPrice || config.arrivalPrice;
+  const priceChangeBps = Number((((latestPrice - initialPrice) / initialPrice) * 100).toFixed(2));
 
   return (
     <div className="space-y-3">
       {/* Breadcrumb & Title */}
-      <div>
-        <span className="text-[11px] font-medium text-slate-400">Trading / Dashboard</span>
-        <h2 className="text-xl font-bold text-white tracking-tight">Main Dashboard</h2>
+      <div className="flex items-center justify-between">
+        <div>
+          <span className="text-[11px] font-medium text-slate-400">Kaggle Dataset / {config.symbol} Market Feed</span>
+          <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+            {config.symbol} Main Execution Dashboard
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 font-mono border border-cyan-800">
+              KAGGLE LIVE
+            </span>
+          </h2>
+        </div>
       </div>
 
       {/* Main Dark Hero Card */}
@@ -40,18 +46,18 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
         {/* Top Info Row */}
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Balance</span>
+            <span className="text-xs text-slate-400 font-medium">Kaggle {config.symbol} Market Price</span>
             <div className="mt-1 flex items-baseline gap-3">
-              <span className="text-3xl font-extrabold text-white tracking-tight font-sans">
-                €22,193.05
+              <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
+                ₹{latestPrice.toLocaleString()}
               </span>
-              <span className="text-xs font-bold text-[#10b981]">
-                +47.3%
+              <span className={`text-xs font-bold ${priceChangeBps >= 0 ? 'text-[#10b981]' : 'text-rose-400'}`}>
+                {priceChangeBps >= 0 ? '+' : ''}{priceChangeBps}%
               </span>
             </div>
           </div>
 
-          {/* Timeframe selector pill tabs */}
+          {/* Timeframe Selector */}
           <div className="flex items-center gap-1 bg-[#181924] p-1 rounded-xl border border-white/5 text-xs font-medium text-slate-400">
             {(['1D', '7D', '1M', '1Y'] as const).map((tf) => (
               <button
@@ -67,18 +73,18 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
           </div>
         </div>
 
-        {/* Silver Monochrome Line Chart */}
+        {/* Silver Monochrome Line Chart loaded directly from Kaggle */}
         <div className="h-[210px] w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={monthsData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
               <defs>
                 <linearGradient id="silverGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.2} />
+                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.25} />
                   <stop offset="95%" stopColor="#ffffff" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
 
-              <XAxis dataKey="month" stroke="#475569" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="timeLabel" stroke="#475569" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis domain={['auto', 'auto']} stroke="#475569" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} hide />
 
               <Tooltip
@@ -89,12 +95,14 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
                   fontSize: '12px',
                   color: '#ffffff',
                 }}
-                formatter={(val: any) => [`€${Number(val).toLocaleString()}`, 'Balance']}
+                itemStyle={{ color: '#ffffff', fontWeight: 600 }}
+                labelStyle={{ color: '#ffffff', fontWeight: 600 }}
+                formatter={(val: any) => [`₹${Number(val).toLocaleString()}`, 'Price']}
               />
 
               <Area
                 type="monotone"
-                dataKey="val"
+                dataKey="price"
                 stroke="#ffffff"
                 strokeWidth={2}
                 fillOpacity={1}

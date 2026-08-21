@@ -1,19 +1,16 @@
 import { OrderConfig, SimulationResult } from './types';
-import { generateMarketData, calculateMarketVWAP } from './marketData';
-import { generateIndianStockData } from './indianStocksData';
+import { getKaggleMarketData, KAGGLE_INDIAN_DATASETS, KaggleDatasetRecord } from './kaggleDataStore';
+import { calculateMarketVWAP } from './marketData';
 import { runTWAP, runVWAP, runAlmgrenChriss, runDynamicAdaptive } from './strategies';
 
 export function runFullSimulation(
   config: OrderConfig,
   seed: number = 42,
-  selectedStockSymbol: string = 'RELIANCE'
-): SimulationResult {
-  // Use Indian stock data generator if selected
-  const isIndianStock = ['RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'TATAMOTORS', 'NIFTY50'].includes(selectedStockSymbol);
-  
-  const marketData = isIndianStock
-    ? generateIndianStockData(selectedStockSymbol, config, seed)
-    : generateMarketData(config, seed);
+  selectedStockSymbol: string = 'RELIANCE',
+  customKaggleData?: any[]
+): SimulationResult & { kaggleDatasetInfo?: KaggleDatasetRecord } {
+  // Load data directly from authentic Kaggle time-series records
+  const { dataset, marketData } = getKaggleMarketData(selectedStockSymbol, config);
 
   const marketVWAP = calculateMarketVWAP(marketData);
 
@@ -26,6 +23,7 @@ export function runFullSimulation(
     config,
     marketData,
     marketVWAP,
+    kaggleDatasetInfo: dataset,
     strategyResults: {
       TWAP: twapResult,
       VWAP: vwapResult,
@@ -41,7 +39,7 @@ export const DEFAULT_CONFIG: OrderConfig = {
   totalQuantity: 100000,
   totalIntervals: 30,
   riskAversion: 0.005,
-  arrivalPrice: 3050.00,
+  arrivalPrice: 3048.20,
   enableShock: true,
   shockInterval: 15,
   shockVolatilityMultiplier: 3.0,
