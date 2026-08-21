@@ -22,6 +22,8 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
   const initialPrice = marketData[0]?.midPrice || config.arrivalPrice;
   const priceChangeBps = Number((((latestPrice - initialPrice) / initialPrice) * 100).toFixed(2));
 
+  const isBuy = config.side === 'BUY';
+
   return (
     <div className="space-y-3">
       {/* Breadcrumb & Title */}
@@ -30,8 +32,14 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
           <span className="text-[11px] font-medium text-slate-400">Kaggle Dataset / {config.symbol} Market Feed</span>
           <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             {config.symbol} Main Execution Dashboard
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 font-mono border border-cyan-800">
-              KAGGLE LIVE
+            <span
+              className={`text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold border transition ${
+                isBuy
+                  ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                  : 'bg-rose-950 text-rose-300 border-rose-800'
+              }`}
+            >
+              {config.side} ORDER ACTIVE
             </span>
           </h2>
         </div>
@@ -42,7 +50,7 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
         {/* Top Info Row */}
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Kaggle {config.symbol} Market Price</span>
+            <span className="text-xs text-slate-400 font-medium">Kaggle {config.symbol} Market Price ({config.side})</span>
             <div className="mt-1 flex items-baseline gap-3">
               <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
                 ₹{latestPrice.toLocaleString()}

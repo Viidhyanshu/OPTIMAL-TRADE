@@ -15,6 +15,13 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onChangeConfig,
   onRunSimulation,
 }) => {
+  const handleSideToggle = (side: OrderSide) => {
+    onChangeConfig({
+      ...config,
+      side,
+    });
+  };
+
   const updateField = (field: keyof OrderConfig, val: any) => {
     onChangeConfig({
       ...config,
@@ -35,8 +42,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => updateField('enableShock', !config.enableShock)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition cursor-pointer active:scale-95 ${
               config.enableShock
                 ? 'bg-amber-950/80 border-amber-500/60 text-amber-300 shadow'
                 : 'bg-white/5 border-white/5 text-slate-400 hover:text-white'
@@ -47,8 +55,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           </button>
 
           <button
+            type="button"
             onClick={onRunSimulation}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white hover:bg-slate-200 text-black font-bold text-xs shadow-lg transition active:scale-95"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white hover:bg-slate-200 text-black font-bold text-xs shadow-lg transition cursor-pointer active:scale-95"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Recalibrate</span>
@@ -58,27 +67,35 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 
       {/* Control Inputs Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 text-xs">
-        {/* Order Side */}
+        {/* Order Side (BUY / SELL Buttons with High Contrast Active Feedback) */}
         <div className="space-y-1.5">
-          <label className="text-slate-400 font-medium block">Order Side</label>
-          <div className="grid grid-cols-2 gap-1 p-1 bg-[#181924] rounded-xl border border-white/5">
+          <div className="flex items-center justify-between">
+            <label className="text-slate-400 font-medium block">Order Side</label>
+            <span className="font-mono text-[10px] font-bold text-white uppercase">
+              Active: {config.side}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#181924] rounded-xl border border-white/10">
             <button
-              onClick={() => updateField('side', 'BUY')}
-              className={`py-1.5 font-bold rounded-lg transition ${
+              type="button"
+              onClick={() => handleSideToggle('BUY')}
+              className={`py-2 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer active:scale-95 ${
                 config.side === 'BUY'
-                  ? 'bg-emerald-950 text-emerald-400 border border-emerald-700/60 shadow'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#10b981] text-black shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-[1.02]'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
               BUY
             </button>
 
             <button
-              onClick={() => updateField('side', 'SELL')}
-              className={`py-1.5 font-bold rounded-lg transition ${
+              type="button"
+              onClick={() => handleSideToggle('SELL')}
+              className={`py-2 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer active:scale-95 ${
                 config.side === 'SELL'
-                  ? 'bg-rose-950 text-rose-300 border border-rose-800/60 shadow'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#f43f5e] text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] scale-[1.02]'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
               SELL
