@@ -181,7 +181,7 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
               domain={['auto', 'auto']}
               stroke="#64748b"
               tick={{ fontSize: 11 }}
-              tickFormatter={(v) => `$${v.toFixed(1)}`}
+              tickFormatter={(v) => `₹${v.toFixed(1)}`}
             />
 
             <Tooltip
@@ -195,7 +195,7 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
               }}
               itemStyle={{ color: '#ffffff', fontWeight: 600 }}
               labelStyle={{ color: '#ffffff', fontWeight: 600 }}
-              formatter={(value: any, name: any) => [`$${Number(value).toFixed(2)}`, name]}
+              formatter={(value: any, name: any) => [`₹${Number(value).toFixed(2)}`, name]}
             />
 
             <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
@@ -205,7 +205,7 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
               stroke="#64748b"
               strokeDasharray="4 4"
               label={{
-                value: `Arrival $${config.arrivalPrice}`,
+                value: `Arrival ₹${config.arrivalPrice}`,
                 fill: '#94a3b8',
                 fontSize: 10,
                 position: 'insideTopRight',
