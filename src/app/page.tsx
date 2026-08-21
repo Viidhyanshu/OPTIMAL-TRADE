@@ -8,7 +8,6 @@ import { Header } from '@/components/Header';
 import { MainHeroChartCard } from '@/components/MainHeroChartCard';
 import { AssetsTableCard } from '@/components/AssetsTableCard';
 import { RepartitionPieCard } from '@/components/RepartitionPieCard';
-import { RegimeShockBanner } from '@/components/RegimeShockBanner';
 import { PriceTrajectoryChart } from '@/components/PriceTrajectoryChart';
 import { SliceBreakdownChart } from '@/components/SliceBreakdownChart';
 import { TradeTable } from '@/components/TradeTable';
@@ -90,10 +89,7 @@ export default function OptimalTradeApp() {
                 onRunSimulation={handleRunSimulation}
               />
 
-              {/* Row 3: Mid-Way Regime Shock Banner */}
-              <RegimeShockBanner result={simulationResult} />
-
-              {/* Row 4: Price Trajectory & Efficient Frontier */}
+              {/* Row 3: Price Trajectory & Efficient Frontier */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                   <PriceTrajectoryChart result={simulationResult} />
@@ -103,7 +99,7 @@ export default function OptimalTradeApp() {
                 </div>
               </div>
 
-              {/* Row 5: Assets Table + Repartition Pie */}
+              {/* Row 4: Assets Table + Repartition Pie */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                   <AssetsTableCard result={simulationResult} />
@@ -113,13 +109,13 @@ export default function OptimalTradeApp() {
                 </div>
               </div>
 
-              {/* Row 6: Bottom Grid Cards (Recent Transactions, Market, Articles) */}
+              {/* Row 5: Bottom Grid Cards (Recent Transactions, Market, Articles) */}
               <BottomCards />
 
-              {/* Row 7: Trade Slicing Distribution Bar Chart */}
+              {/* Row 6: Trade Slicing Distribution Bar Chart */}
               <SliceBreakdownChart result={simulationResult} />
 
-              {/* Row 8: Granular Execution Log Table */}
+              {/* Row 7: Granular Execution Log Table */}
               <TradeTable result={simulationResult} />
             </>
           )}
