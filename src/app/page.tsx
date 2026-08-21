@@ -46,8 +46,8 @@ export default function OptimalTradeApp() {
 
   return (
     <div className="min-h-screen bg-black text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6 relative overflow-hidden">
-      {/* React-Bits GradientWaves Full Viewport WebGL Background Shader */}
-      <div className="fixed inset-0 pointer-events-none z-0 w-full h-full opacity-60 mix-blend-screen">
+      {/* React-Bits GradientWaves Full Screen WebGL Shader */}
+      <div className="fixed inset-0 pointer-events-none z-0 w-screen h-screen opacity-70 mix-blend-screen overflow-hidden">
         <GradientWaves
           horizonColor="#5227FF"
           waveColor="#FF9FFC"

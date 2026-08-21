@@ -109,7 +109,7 @@ const vertexShader = `
     vec3 pos = position;
 
     float t = uTime * uSpeed;
-    vec2 p = uv * uWaveScale * 12.0;
+    vec2 p = uv * uWaveScale * 8.0;
 
     float wave1 = sin(p.x * uWaveRatio + t) * cos(p.y + t * 0.8) * uAmplitude;
     float wave2 = snoise(vec3(p * (uTurbulence * 0.05), t * 0.5)) * (uSwell * 0.1);
@@ -146,9 +146,6 @@ const fragmentShader = `
 
     float crestVal = smoothstep(1.5, 3.5, vElevation);
     color = mix(color, uCrestColor, crestVal);
-
-    float fog = smoothstep(0.0, uFogDepth, gl_FragCoord.z / gl_FragCoord.w);
-    color = mix(color, uHorizonColor, fog * 0.4);
 
     color *= uBrightness;
 
@@ -195,8 +192,8 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
     const heightPx = container.clientHeight || window.innerHeight;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, width / heightPx, 0.1, 1000);
-    camera.position.set(0, -height, 12 / zoom);
+    const camera = new THREE.PerspectiveCamera(65, width / heightPx, 0.1, 1000);
+    camera.position.set(0, -4, 8 / zoom);
     camera.rotation.x = tilt;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -206,8 +203,9 @@ export const GradientWaves: React.FC<GradientWavesProps> = ({
 
     container.appendChild(renderer.domElement);
 
-    const segments = detail === 'high' ? 128 : detail === 'medium' ? 64 : 32;
-    const geometry = new THREE.PlaneGeometry(60, 60, segments, segments);
+    const segments = detail === 'high' ? 128 : detail === 'medium' ? 96 : 64;
+    // Giant plane size (200x200) to ensure zero edge clipping across any screen ratio
+    const geometry = new THREE.PlaneGeometry(200, 200, segments, segments);
 
     const uniforms = {
       uTime: { value: 0 },
