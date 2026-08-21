@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { KAGGLE_COMPANIES_LIST, TimeframePeriod } from '@/lib/engine/kaggleDataStore';
-import { Database, ChevronDown, Search, ExternalLink } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 
 interface KaggleDataImporterProps {
   selectedStockSymbol: string;
@@ -31,33 +31,6 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
 
   return (
     <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-4">
-      {/* Top Banner Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-[#181924] text-white border border-white/5">
-            <Database className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="font-bold text-white text-base">
-              Kaggle Indian Stock Market Engine (NIFTY 50)
-            </h3>
-            <p className="text-xs text-slate-400">
-              Select any Indian company or timeframe (1D, 7D, 1M, 1Y) to stream authentic Kaggle time-series.
-            </p>
-          </div>
-        </div>
-
-        <a
-          href="https://www.kaggle.com/datasets/rohanrao/nifty50-stock-market-data"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-300 transition"
-        >
-          <span>Kaggle NIFTY 50 Source</span>
-          <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
-        </a>
-      </div>
-
       {/* Main Selection Controls: Company Dropdown Menu + Timeframe Selector */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Company Dropdown Menu Button */}
