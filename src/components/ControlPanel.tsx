@@ -38,7 +38,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             onClick={() => updateField('enableShock', !config.enableShock)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition ${
               config.enableShock
-                ? 'bg-amber-950/80 border-amber-500 text-amber-300 shadow'
+                ? 'bg-amber-950/80 border-amber-500/60 text-amber-300 shadow'
                 : 'bg-white/5 border-white/5 text-slate-400 hover:text-white'
             }`}
           >
@@ -48,7 +48,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 
           <button
             onClick={onRunSimulation}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white hover:bg-slate-200 text-black font-bold text-xs shadow-lg transition"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white hover:bg-slate-200 text-black font-bold text-xs shadow-lg transition active:scale-95"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Recalibrate</span>
@@ -57,26 +57,32 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
       </div>
 
       {/* Control Inputs Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 text-xs">
         {/* Order Side */}
         <div className="space-y-1.5">
           <label className="text-slate-400 font-medium block">Order Side</label>
           <div className="grid grid-cols-2 gap-1 p-1 bg-[#181924] rounded-xl border border-white/5">
-            {(['BUY', 'SELL'] as OrderSide[]).map((side) => (
-              <button
-                key={side}
-                onClick={() => updateField('side', side)}
-                className={`py-1.5 font-bold rounded-lg transition ${
-                  config.side === side
-                    ? side === 'BUY'
-                      ? 'bg-emerald-500 text-black shadow'
-                      : 'bg-rose-500 text-white shadow'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                {side}
-              </button>
-            ))}
+            <button
+              onClick={() => updateField('side', 'BUY')}
+              className={`py-1.5 font-bold rounded-lg transition ${
+                config.side === 'BUY'
+                  ? 'bg-emerald-950 text-emerald-400 border border-emerald-700/60 shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              BUY
+            </button>
+
+            <button
+              onClick={() => updateField('side', 'SELL')}
+              className={`py-1.5 font-bold rounded-lg transition ${
+                config.side === 'SELL'
+                  ? 'bg-rose-950 text-rose-300 border border-rose-800/60 shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              SELL
+            </button>
           </div>
         </div>
 
@@ -84,7 +90,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         <div className="space-y-1.5">
           <div className="flex justify-between text-slate-400 font-medium">
             <span>Order Quantity</span>
-            <span className="font-mono text-white">{config.totalQuantity.toLocaleString()}</span>
+            <span className="font-mono text-white font-bold">{config.totalQuantity.toLocaleString()} shares</span>
           </div>
           <input
             type="range"
@@ -101,7 +107,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         <div className="space-y-1.5">
           <div className="flex justify-between text-slate-400 font-medium">
             <span>Risk Aversion (λ)</span>
-            <span className="font-mono text-white">{config.riskAversion}</span>
+            <span className="font-mono text-white font-bold">{config.riskAversion}</span>
           </div>
           <input
             type="range"
@@ -121,8 +127,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             type="number"
             step="0.10"
             value={config.arrivalPrice}
-            onChange={(e) => updateField('arrivalPrice', Number(e.target.value))}
-            className="w-full bg-[#181924] border border-white/5 rounded-xl px-3 py-1.5 text-xs text-white font-mono font-bold focus:outline-none focus:border-white/20"
+            onChange={(e) => updateField('arrivalPrice', Number(e.target.value) || 100.0)}
+            className="w-full bg-[#181924] border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-mono font-bold focus:outline-none focus:border-white/20"
           />
         </div>
       </div>
