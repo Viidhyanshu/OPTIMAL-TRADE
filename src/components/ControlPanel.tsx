@@ -16,10 +16,12 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onRunSimulation,
 }) => {
   const handleSideToggle = (side: OrderSide) => {
-    onChangeConfig({
+    const updated = {
       ...config,
       side,
-    });
+    };
+    onChangeConfig(updated);
+    onRunSimulation(); // Force immediate full-page algorithm recalibration!
   };
 
   const updateField = (field: keyof OrderConfig, val: any) => {
@@ -43,7 +45,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => updateField('enableShock', !config.enableShock)}
+            onClick={() => {
+              updateField('enableShock', !config.enableShock);
+              onRunSimulation();
+            }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition cursor-pointer active:scale-95 ${
               config.enableShock
                 ? 'bg-amber-950/80 border-amber-500/60 text-amber-300 shadow'
@@ -67,12 +72,16 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 
       {/* Control Inputs Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 text-xs">
-        {/* Order Side (BUY / SELL Buttons with High Contrast Active Feedback) */}
+        {/* Order Side (BUY / SELL Toggle with Immediate Recalibration & High Contrast Glow) */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <label className="text-slate-400 font-medium block">Order Side</label>
-            <span className="font-mono text-[10px] font-bold text-white uppercase">
-              Active: {config.side}
+            <span
+              className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                config.side === 'BUY' ? 'bg-emerald-950 text-emerald-300' : 'bg-rose-950 text-rose-300'
+              }`}
+            >
+              {config.side} ACTIVE
             </span>
           </div>
 
@@ -80,9 +89,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             <button
               type="button"
               onClick={() => handleSideToggle('BUY')}
-              className={`py-2 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer active:scale-95 ${
+              className={`py-2 text-xs font-black rounded-lg transition-all duration-200 cursor-pointer active:scale-95 ${
                 config.side === 'BUY'
-                  ? 'bg-[#10b981] text-black shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-[1.02]'
+                  ? 'bg-[#10b981] text-black shadow-[0_0_20px_rgba(16,185,129,0.6)] scale-[1.03]'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -92,9 +101,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             <button
               type="button"
               onClick={() => handleSideToggle('SELL')}
-              className={`py-2 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer active:scale-95 ${
+              className={`py-2 text-xs font-black rounded-lg transition-all duration-200 cursor-pointer active:scale-95 ${
                 config.side === 'SELL'
-                  ? 'bg-[#f43f5e] text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] scale-[1.02]'
+                  ? 'bg-[#f43f5e] text-white shadow-[0_0_20px_rgba(244,63,94,0.6)] scale-[1.03]'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
