@@ -15,12 +15,12 @@ body {
   overflow-x: hidden;
 }
 
-/* White Background with Black Grid Lines CSS Pattern */
+/* White Background with Crisp Dark Black Grid Lines CSS Pattern */
 .bg-grid-pattern {
   background-size: 36px 36px;
   background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.35) 1.5px, transparent 1.5px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 1.5px, transparent 1.5px);
 }
 
 /* Custom Scrollbar */
