@@ -18,7 +18,7 @@ import { BottomCards } from '@/components/BottomCards';
 import { ControlPanel } from '@/components/ControlPanel';
 import { KaggleDataImporter } from '@/components/KaggleDataImporter';
 import { Footer } from '@/components/Footer';
-import MoltenMetal from '@/components/MoltenMetal';
+import GradientWaves from '@/components/GradientWaves';
 
 export default function OptimalTradeApp() {
   const [config, setConfig] = useState<OrderConfig>(DEFAULT_CONFIG);
@@ -46,31 +46,33 @@ export default function OptimalTradeApp() {
 
   return (
     <div className="min-h-screen bg-black text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6 relative overflow-hidden">
-      {/* React-Bits MoltenMetal WebGL Background Shader */}
+      {/* React-Bits GradientWaves WebGL Background Shader */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-40 mix-blend-screen">
-        <MoltenMetal
-          color1="#5227FF"
-          color2="#FF9FFC"
-          color3="#FFFFFF"
-          speed={0.35}
-          scale={4}
-          detail={3}
-          glow={1.6}
-          coreSize={0.1}
-          swirl={1}
-          fold={-0.2}
-          blackPoint={0.05}
-          brightness={1.3}
-          colorMode="molten"
+        <GradientWaves
+          horizonColor="#5227FF"
+          waveColor="#FF9FFC"
+          crestColor="#FFFFFF"
+          speed={0.4}
+          amplitude={2.5}
+          waveScale={0.6}
+          waveRatio={0.9}
+          swell={35}
+          turbulence={20}
+          tilt={1.11}
+          zoom={1}
+          height={5.5}
+          fogDepth={15}
+          detail="medium"
+          brightness={1}
+          opacity={1}
+          mouseInteraction
+          parallaxStrength={0.5}
           grain
           grainIntensity={0.05}
-          mouseInteraction
-          mouseStrength={0.3}
-          opacity={1}
         />
       </div>
 
-      {/* Outer Main Container Card - Sleek Monochrome Dark Black (z-10 above background MoltenMetal shader) */}
+      {/* Outer Main Container Card - Sleek Monochrome Dark Black (z-10 above background GradientWaves shader) */}
       <div className="max-w-7xl mx-auto bg-[#0a0b10]/95 border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden relative z-10">
         {/* Header Navbar */}
         <Header />
