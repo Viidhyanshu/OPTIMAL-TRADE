@@ -30,11 +30,11 @@ export const SliceBreakdownChart: React.FC<SliceBreakdownChartProps> = ({ result
   }));
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-4">
+      <div className="flex items-center justify-between border-b border-white/5 pb-3">
         <div className="flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-cyan-400" />
-          <h3 className="font-bold text-slate-100 text-base">
+          <BarChart3 className="w-5 h-5 text-white" />
+          <h3 className="font-bold text-white text-base">
             Trade Slicing Breakdown (Shares Traded Per Interval)
           </h3>
         </div>
@@ -43,19 +43,19 @@ export const SliceBreakdownChart: React.FC<SliceBreakdownChartProps> = ({ result
         </span>
       </div>
 
-      <div className="h-[280px] w-full">
+      <div className="h-[260px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e2230" vertical={false} />
             <XAxis dataKey="timeLabel" stroke="#64748b" tick={{ fontSize: 11 }} />
             <YAxis stroke="#64748b" tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#0f172a',
+                backgroundColor: '#181a24',
                 borderColor: '#334155',
                 borderRadius: '0.75rem',
                 fontSize: '12px',
-                color: '#f8fafc',
+                color: '#ffffff',
               }}
               formatter={(val: any) => [`${Number(val).toLocaleString()} shares`, 'Qty']}
             />
@@ -63,7 +63,7 @@ export const SliceBreakdownChart: React.FC<SliceBreakdownChartProps> = ({ result
 
             <Bar dataKey="TWAP" fill="#f59e0b" radius={[3, 3, 0, 0]} />
             <Bar dataKey="VWAP" fill="#a855f7" radius={[3, 3, 0, 0]} />
-            <Bar dataKey="Almgren-Chriss" fill="#3b82f6" radius={[3, 3, 0, 0]} />
+            <Bar dataKey="Almgren-Chriss" fill="#94a3b8" radius={[3, 3, 0, 0]} />
             <Bar dataKey="Dynamic Adaptive" fill="#10b981" radius={[3, 3, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>

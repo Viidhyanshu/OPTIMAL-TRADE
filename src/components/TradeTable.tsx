@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { SimulationResult, StrategyType } from '@/lib/engine/types';
-import { Table, ArrowUpDown, ShieldAlert, CheckCircle } from 'lucide-react';
+import { Table, ShieldAlert } from 'lucide-react';
 
 interface TradeTableProps {
   result: SimulationResult;
@@ -11,28 +11,28 @@ interface TradeTableProps {
 export const TradeTable: React.FC<TradeTableProps> = ({ result }) => {
   const [selectedStrategy, setSelectedStrategy] = useState<StrategyType>('DYNAMIC_ADAPTIVE');
 
-  const { strategyResults, marketData, config } = result;
+  const { strategyResults, marketData } = result;
   const currentResult = strategyResults[selectedStrategy];
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+    <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
         <div className="flex items-center gap-2">
-          <Table className="w-5 h-5 text-cyan-400" />
-          <h3 className="font-bold text-slate-100 text-base">
+          <Table className="w-5 h-5 text-white" />
+          <h3 className="font-bold text-white text-base">
             Granular Execution Log & Microstructure Audit
           </h3>
         </div>
 
         {/* Strategy Selector Tabs */}
-        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+        <div className="flex items-center gap-1 bg-[#181924] p-1 rounded-xl border border-white/5 text-xs font-medium">
           {(['TWAP', 'VWAP', 'ALMGREN_CHRISS', 'DYNAMIC_ADAPTIVE'] as StrategyType[]).map((strat) => (
             <button
               key={strat}
               onClick={() => setSelectedStrategy(strat)}
-              className={`px-3 py-1.5 rounded-lg font-medium transition ${
+              className={`px-3 py-1.5 rounded-lg transition ${
                 selectedStrategy === strat
-                  ? 'bg-cyan-600 text-white shadow'
+                  ? 'bg-white text-black font-bold shadow'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -42,10 +42,10 @@ export const TradeTable: React.FC<TradeTableProps> = ({ result }) => {
         </div>
       </div>
 
-      {/* Table Container */}
-      <div className="overflow-x-auto max-h-[380px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800">
+      {/* Table */}
+      <div className="overflow-x-auto max-h-[380px] overflow-y-auto">
         <table className="w-full text-left text-xs text-slate-300">
-          <thead className="bg-slate-950 text-slate-400 sticky top-0 uppercase tracking-wider font-semibold border-b border-slate-800">
+          <thead className="bg-[#181924] text-slate-400 sticky top-0 uppercase tracking-wider text-[10px] font-semibold border-b border-white/5">
             <tr>
               <th className="py-2.5 px-3">Interval</th>
               <th className="py-2.5 px-3">Time</th>
@@ -59,13 +59,13 @@ export const TradeTable: React.FC<TradeTableProps> = ({ result }) => {
               <th className="py-2.5 px-3 text-center">Shock</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 font-mono">
+          <tbody className="divide-y divide-white/5 font-mono text-[11px]">
             {currentResult.steps.map((step, idx) => {
               const market = marketData[idx];
               return (
                 <tr
                   key={step.interval}
-                  className={`hover:bg-slate-800/50 transition ${
+                  className={`hover:bg-white/5 transition ${
                     step.isShockActive ? 'bg-amber-950/20' : ''
                   }`}
                 >
@@ -74,11 +74,11 @@ export const TradeTable: React.FC<TradeTableProps> = ({ result }) => {
                   <td className="py-2 px-3 text-slate-300">${market.midPrice.toFixed(2)}</td>
                   <td className="py-2 px-3 text-slate-400">${market.spread.toFixed(3)}</td>
                   <td className="py-2 px-3 text-right text-slate-300">{step.targetQuantity.toLocaleString()}</td>
-                  <td className="py-2 px-3 text-right font-bold text-cyan-400">{step.executedQuantity.toLocaleString()}</td>
+                  <td className="py-2 px-3 text-right font-bold text-white">{step.executedQuantity.toLocaleString()}</td>
                   <td className="py-2 px-3 text-right font-bold text-white">${step.executionPrice.toFixed(2)}</td>
                   <td className="py-2 px-3 text-right text-amber-400">${step.impactCost.toFixed(2)}</td>
                   <td className={`py-2 px-3 text-right font-semibold ${
-                    step.slippageBps > 0 ? 'text-rose-400' : 'text-emerald-400'
+                    step.slippageBps > 0 ? 'text-rose-400' : 'text-[#10b981]'
                   }`}>
                     {step.slippageBps > 0 ? '+' : ''}{step.slippageBps}
                   </td>
