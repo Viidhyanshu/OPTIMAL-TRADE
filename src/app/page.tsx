@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { DEFAULT_CONFIG, runFullSimulation } from '@/lib/engine/runner';
 import { OrderConfig } from '@/lib/engine/types';
 import { TimeframePeriod } from '@/lib/engine/kaggleDataStore';
@@ -18,6 +18,7 @@ import { BottomCards } from '@/components/BottomCards';
 import { ControlPanel } from '@/components/ControlPanel';
 import { KaggleDataImporter } from '@/components/KaggleDataImporter';
 import { Footer } from '@/components/Footer';
+import MoltenMetal from '@/components/MoltenMetal';
 
 export default function OptimalTradeApp() {
   const [config, setConfig] = useState<OrderConfig>(DEFAULT_CONFIG);
@@ -25,25 +26,6 @@ export default function OptimalTradeApp() {
   const [selectedStockSymbol, setSelectedStockSymbol] = useState<string>('RELIANCE');
   const [selectedTimeframe, setSelectedTimeframe] = useState<TimeframePeriod>('1D');
   const [activeNavTab, setActiveNavTab] = useState<string>('Dashboard');
-
-  // Mouse Parallax Offset State
-  const [parallaxOffset, setParallaxOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { innerWidth, innerHeight } = window;
-      const normX = (e.clientX / innerWidth - 0.5) * 2;
-      const normY = (e.clientY / innerHeight - 0.5) * 2;
-
-      setParallaxOffset({
-        x: normX * 25,
-        y: normY * 25,
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   const simulationResult = useMemo(() => {
     return runFullSimulation(config, seed, selectedStockSymbol, selectedTimeframe);
@@ -64,24 +46,32 @@ export default function OptimalTradeApp() {
 
   return (
     <div className="min-h-screen bg-black text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6 relative overflow-hidden">
-      {/* Background Subtle Mouse Parallax Noise Shader Layer (z-0 behind main container) */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-15 mix-blend-screen z-0 bg-repeat bg-noise-shader transition-transform duration-200 ease-out"
-        style={{
-          transform: `translate3d(${parallaxOffset.x}px, ${parallaxOffset.y}px, 0) scale(1.1)`,
-        }}
-      />
+      {/* React-Bits MoltenMetal WebGL Background Shader */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-40 mix-blend-screen">
+        <MoltenMetal
+          color1="#5227FF"
+          color2="#FF9FFC"
+          color3="#FFFFFF"
+          speed={0.35}
+          scale={4}
+          detail={3}
+          glow={1.6}
+          coreSize={0.1}
+          swirl={1}
+          fold={-0.2}
+          blackPoint={0.05}
+          brightness={1.3}
+          colorMode="molten"
+          grain
+          grainIntensity={0.05}
+          mouseInteraction
+          mouseStrength={0.3}
+          opacity={1}
+        />
+      </div>
 
-      {/* Subtle Monochrome Ambient Radial Lighting Glow */}
-      <div
-        className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-white/10 via-slate-800/5 to-transparent blur-3xl pointer-events-none z-0 transition-transform duration-300 ease-out"
-        style={{
-          transform: `translate3d(${parallaxOffset.x * 0.5}px, ${parallaxOffset.y * 0.5}px, 0)`,
-        }}
-      />
-
-      {/* Outer Main Container Card - Sleek Monochrome Dark Black (z-10 above background noise) */}
-      <div className="max-w-7xl mx-auto bg-[#0a0b10] border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden relative z-10">
+      {/* Outer Main Container Card - Sleek Monochrome Dark Black (z-10 above background MoltenMetal shader) */}
+      <div className="max-w-7xl mx-auto bg-[#0a0b10]/95 border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden relative z-10">
         {/* Header Navbar */}
         <Header />
 
