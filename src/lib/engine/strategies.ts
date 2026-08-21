@@ -11,15 +11,9 @@ function calculateImpactCost(
 ): { temporaryImpact: number; permanentImpact: number } {
   if (tradeQty <= 0) return { temporaryImpact: 0, permanentImpact: 0 };
   
-  // Participation rate = tradeQty / marketVolume
   const participationRate = Math.min(1.0, tradeQty / Math.max(1, marketVolume));
-  
-  // Temporary Impact (Power law model: eta * (q/V)^alpha)
-  // Higher participation rate leads to superlinear temporary impact
   const eta = 0.1;
   const temporaryImpact = midPrice * eta * Math.pow(participationRate, 0.6) * (100000 / Math.max(1000, liquidityDepth));
-  
-  // Permanent Impact (Linear model: gamma * q)
   const gamma = 0.02;
   const permanentImpact = midPrice * gamma * participationRate;
 
@@ -31,14 +25,14 @@ function calculateImpactCost(
 
 /**
  * Strategy 1: Time-Weighted Average Price (TWAP)
- * Uniform order distribution across time slices
  */
 export function runTWAP(config: OrderConfig, marketData: MarketIntervalData[]): StrategyResult {
   const steps: ExecutionStep[] = [];
-  const N = config.totalIntervals;
+  const N = marketData.length;
+  if (N === 0) return formatEmptyResult('TWAP', 'TWAP (Time-Weighted)', config);
+
   const sliceSize = config.totalQuantity / N;
   let remainingQuantity = config.totalQuantity;
-
   let totalExecutedQty = 0;
   let totalCashSpent = 0;
   let spreadCostTotal = 0;
@@ -46,13 +40,14 @@ export function runTWAP(config: OrderConfig, marketData: MarketIntervalData[]): 
 
   for (let i = 0; i < N; i++) {
     const market = marketData[i];
+    if (!market) break;
+
     const targetQty = (i === N - 1) ? remainingQuantity : sliceSize;
     const executedQty = Math.min(remainingQuantity, Math.round(targetQty));
     
     remainingQuantity -= executedQty;
     totalExecutedQty += executedQty;
 
-    // Market impact & execution price
     const { temporaryImpact, permanentImpact } = calculateImpactCost(
       executedQty,
       market.marketVolume,
@@ -100,12 +95,13 @@ export function runTWAP(config: OrderConfig, marketData: MarketIntervalData[]): 
 
 /**
  * Strategy 2: Volume-Weighted Average Price (VWAP)
- * Slices proportional to expected historical volume profile
  */
 export function runVWAP(config: OrderConfig, marketData: MarketIntervalData[]): StrategyResult {
   const steps: ExecutionStep[] = [];
-  const N = config.totalIntervals;
-  const totalMarketVol = marketData.reduce((acc, m) => acc + m.marketVolume, 0);
+  const N = marketData.length;
+  if (N === 0) return formatEmptyResult('VWAP', 'VWAP (Volume-Weighted)', config);
+
+  const totalMarketVol = marketData.reduce((acc, m) => acc + (m?.marketVolume || 0), 0);
   
   let remainingQuantity = config.totalQuantity;
   let totalExecutedQty = 0;
@@ -115,7 +111,9 @@ export function runVWAP(config: OrderConfig, marketData: MarketIntervalData[]): 
 
   for (let i = 0; i < N; i++) {
     const market = marketData[i];
-    const volumeRatio = market.marketVolume / totalMarketVol;
+    if (!market) break;
+
+    const volumeRatio = totalMarketVol > 0 ? market.marketVolume / totalMarketVol : 1 / N;
     const targetQty = (i === N - 1) ? remainingQuantity : config.totalQuantity * volumeRatio;
     const executedQty = Math.min(remainingQuantity, Math.round(targetQty));
 
@@ -169,20 +167,18 @@ export function runVWAP(config: OrderConfig, marketData: MarketIntervalData[]): 
 
 /**
  * Strategy 3: Almgren-Chriss Optimal Execution
- * Balances market impact against risk aversion parameter lambda
  */
 export function runAlmgrenChriss(config: OrderConfig, marketData: MarketIntervalData[]): StrategyResult {
   const steps: ExecutionStep[] = [];
-  const N = config.totalIntervals;
+  const N = marketData.length;
+  if (N === 0) return formatEmptyResult('ALMGREN_CHRISS', 'Almgren-Chriss Optimal', config);
   
-  // Almgren-Chriss kappa = sqrt(lambda * sigma^2 / eta)
   const lambda = config.riskAversion;
-  const sigma = 0.02; // Average volatility
-  const eta = 1e-6;   // Temporary impact coefficient
+  const sigma = 0.02;
+  const eta = 1e-6;
   
   const kappa = Math.sqrt(Math.max(1e-6, (lambda * Math.pow(sigma, 2)) / eta));
 
-  // Closed form trajectory: x(t) = Q * sinh(kappa*(T - t)) / sinh(kappa*T)
   const inventoryTrajectory: number[] = [];
   for (let j = 0; j <= N; j++) {
     const t = j;
@@ -201,6 +197,8 @@ export function runAlmgrenChriss(config: OrderConfig, marketData: MarketInterval
 
   for (let i = 0; i < N; i++) {
     const market = marketData[i];
+    if (!market) break;
+
     const targetQty = (i === N - 1) ? remainingQuantity : (inventoryTrajectory[i] - inventoryTrajectory[i + 1]);
     const executedQty = Math.min(remainingQuantity, Math.max(0, Math.round(targetQty)));
 
@@ -253,13 +251,12 @@ export function runAlmgrenChriss(config: OrderConfig, marketData: MarketInterval
 }
 
 /**
- * Strategy 4: Dynamic Adaptive Execution (Flagship Solution)
- * Dynamically recalibrates order sizing at every interval based on live market shock,
- * liquidity contraction, and volatility spikes.
+ * Strategy 4: Dynamic Adaptive Execution
  */
 export function runDynamicAdaptive(config: OrderConfig, marketData: MarketIntervalData[]): StrategyResult {
   const steps: ExecutionStep[] = [];
-  const N = config.totalIntervals;
+  const N = marketData.length;
+  if (N === 0) return formatEmptyResult('DYNAMIC_ADAPTIVE', 'Dynamic Adaptive Execution', config);
   
   let remainingQuantity = config.totalQuantity;
   let totalExecutedQty = 0;
@@ -267,28 +264,23 @@ export function runDynamicAdaptive(config: OrderConfig, marketData: MarketInterv
   let spreadCostTotal = 0;
   let impactCostTotal = 0;
 
-  const baselineSpread = marketData[0].spread;
-  const baselineVol = marketData[0].volatility;
+  const baselineSpread = marketData[0]?.spread || 0.1;
+  const baselineVol = marketData[0]?.volatility || 0.015;
 
   for (let i = 0; i < N; i++) {
     const market = marketData[i];
-    const intervalsRemaining = N - i;
+    if (!market) break;
 
-    // Detect live regime shift indicators
+    const intervalsRemaining = Math.max(1, N - i);
+
     const spreadRatio = market.spread / Math.max(0.001, baselineSpread);
     const volRatio = market.volatility / Math.max(0.001, baselineVol);
 
-    // Adaptive Slicing Factor:
-    // When spread is extremely wide (shock hit), throttle volume temporarily to avoid paying massive spread/impact
-    // If volatility is high but spread is moderate, accelerate to avoid inventory risk.
     let adaptiveMultiplier = 1.0;
-
     if (market.isShockActive) {
       if (spreadRatio > 2.0 && volRatio > 2.0) {
-        // Severe shock: throttle to 50% during the initial shock spike to avoid peak impact
         adaptiveMultiplier = 0.55;
       } else if (volRatio > 1.8) {
-        // High volatility post-shock recovery: accelerate execution to reduce inventory risk
         adaptiveMultiplier = 1.35;
       }
     }
@@ -345,9 +337,24 @@ export function runDynamicAdaptive(config: OrderConfig, marketData: MarketInterv
   return formatStrategyResult('DYNAMIC_ADAPTIVE', 'Dynamic Adaptive Execution', steps, config, totalExecutedQty, totalCashSpent, spreadCostTotal, impactCostTotal);
 }
 
-/**
- * Format and summarize execution performance metrics
- */
+function formatEmptyResult(strategy: StrategyType, strategyName: string, config: OrderConfig): StrategyResult {
+  return {
+    strategy,
+    strategyName,
+    steps: [],
+    totalExecutedQuantity: 0,
+    avgExecutionPrice: config.arrivalPrice,
+    implementationShortfall: 0,
+    implementationShortfallBps: 0,
+    spreadCostTotal: 0,
+    impactCostTotal: 0,
+    vwapDeviationBps: 0,
+    costVariance: 0,
+    fillRate: 0,
+    sharpeRatio: 0,
+  };
+}
+
 function formatStrategyResult(
   strategy: StrategyType,
   strategyName: string,
@@ -360,15 +367,13 @@ function formatStrategyResult(
 ): StrategyResult {
   const avgExecutionPrice = totalExecutedQuantity > 0 ? Number((totalCashSpent / totalExecutedQuantity).toFixed(4)) : config.arrivalPrice;
   
-  // Implementation Shortfall IS = Side * (AvgExecPrice - ArrivalPrice) * Q
   const sideMultiplier = config.side === 'BUY' ? 1 : -1;
   const implementationShortfall = sideMultiplier * (avgExecutionPrice - config.arrivalPrice) * config.totalQuantity;
   const implementationShortfallBps = (implementationShortfall / (config.arrivalPrice * config.totalQuantity)) * 10000;
 
-  // Calculate cost variance across steps
   const costs = steps.map(s => s.totalStepCost);
-  const meanCost = costs.reduce((a, b) => a + b, 0) / costs.length;
-  const variance = costs.reduce((a, b) => a + Math.pow(b - meanCost, 2), 0) / costs.length;
+  const meanCost = costs.length > 0 ? costs.reduce((a, b) => a + b, 0) / costs.length : 0;
+  const variance = costs.length > 0 ? costs.reduce((a, b) => a + Math.pow(b - meanCost, 2), 0) / costs.length : 0;
 
   const fillRate = (totalExecutedQuantity / config.totalQuantity) * 100;
   const sharpeRatio = Math.max(0, 3.5 - (implementationShortfallBps / 20));
