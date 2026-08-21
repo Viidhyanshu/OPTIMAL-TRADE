@@ -3,6 +3,7 @@
 import React from 'react';
 import { SimulationResult } from '@/lib/engine/types';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import { Activity, Sparkles, TrendingUp } from 'lucide-react';
 
 interface MainHeroChartCardProps {
   result: SimulationResult;
@@ -11,7 +12,6 @@ interface MainHeroChartCardProps {
 export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) => {
   const { marketData, config } = result;
 
-  // Chart data loaded directly from Kaggle records
   const chartData = marketData.map((m) => ({
     timeLabel: m.timeLabel,
     price: m.midPrice,
@@ -21,22 +21,23 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
   const latestPrice = marketData[marketData.length - 1]?.midPrice || config.arrivalPrice;
   const initialPrice = marketData[0]?.midPrice || config.arrivalPrice;
   const priceChangeBps = Number((((latestPrice - initialPrice) / initialPrice) * 100).toFixed(2));
-
   const isBuy = config.side === 'BUY';
 
   return (
     <div className="space-y-3">
-      {/* Breadcrumb & Title */}
-      <div className="flex items-center justify-between">
+      {/* Breadcrumb Header */}
+      <div className="flex items-center justify-between px-1">
         <div>
-          <span className="text-[11px] font-medium text-slate-400">Kaggle Dataset / {config.symbol} Market Feed</span>
-          <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            {config.symbol} Main Execution Dashboard
+          <span className="text-[11px] font-medium text-slate-400 font-mono">
+            Kaggle Feed / {config.symbol} Intraday Session
+          </span>
+          <h2 className="text-xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
+            {config.symbol} Main Execution Terminal
             <span
-              className={`text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold border transition ${
+              className={`text-[10px] px-3 py-0.5 rounded-full font-mono font-bold border backdrop-blur-md transition ${
                 isBuy
-                  ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                  : 'bg-rose-950 text-rose-300 border-rose-800'
+                  ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+                  : 'bg-rose-500/10 text-rose-300 border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.2)]'
               }`}
             >
               {config.side} ORDER ACTIVE
@@ -45,44 +46,57 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
         </div>
       </div>
 
-      {/* Main Dark Hero Card */}
-      <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-4 relative overflow-hidden">
-        {/* Top Info Row */}
-        <div className="flex items-center justify-between">
+      {/* Main Liquid Glass Hero Card */}
+      <div className="apple-glass-panel rounded-3xl p-6 space-y-4 relative overflow-hidden">
+        {/* Subtle Liquid Lighting Blob */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+
+        {/* Price Metrics Row */}
+        <div className="flex items-center justify-between relative z-10">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Kaggle {config.symbol} Market Price ({config.side})</span>
+            <span className="text-xs text-slate-400 font-medium">Kaggle Benchmark Mid Price ({config.side})</span>
             <div className="mt-1 flex items-baseline gap-3">
-              <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
+              <span className="text-3xl sm:text-4xl font-black text-white tracking-tight font-mono">
                 ₹{latestPrice.toLocaleString()}
               </span>
-              <span className={`text-xs font-bold ${priceChangeBps >= 0 ? 'text-[#10b981]' : 'text-rose-400'}`}>
+              <span
+                className={`text-xs font-extrabold px-2.5 py-1 rounded-full border backdrop-blur-md flex items-center gap-1 ${
+                  priceChangeBps >= 0
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                }`}
+              >
+                <TrendingUp className="w-3.5 h-3.5" />
                 {priceChangeBps >= 0 ? '+' : ''}{priceChangeBps}%
               </span>
             </div>
           </div>
         </div>
 
-        {/* Silver Monochrome Line Chart loaded directly from Kaggle */}
-        <div className="h-[210px] w-full pt-2">
+        {/* Liquid Area Chart */}
+        <div className="h-[220px] w-full pt-2 relative z-10">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
               <defs>
-                <linearGradient id="silverGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#ffffff" stopOpacity={0.0} />
+                <linearGradient id="appleGlassGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.35} />
+                  <stop offset="50%" stopColor="#818cf8" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#38bdf8" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
 
-              <XAxis dataKey="timeLabel" stroke="#475569" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis domain={['auto', 'auto']} stroke="#475569" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} hide />
+              <XAxis dataKey="timeLabel" stroke="#64748b" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+              <YAxis domain={['auto', 'auto']} stroke="#64748b" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} hide />
 
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#181a24',
-                  borderColor: '#334155',
-                  borderRadius: '0.75rem',
+                  backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                  backdropFilter: 'blur(20px)',
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
+                  borderRadius: '1rem',
                   fontSize: '12px',
                   color: '#ffffff',
+                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
                 }}
                 itemStyle={{ color: '#ffffff', fontWeight: 600 }}
                 labelStyle={{ color: '#ffffff', fontWeight: 600 }}
@@ -92,10 +106,10 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
               <Area
                 type="monotone"
                 dataKey="price"
-                stroke="#ffffff"
-                strokeWidth={2}
+                stroke="#38bdf8"
+                strokeWidth={2.5}
                 fillOpacity={1}
-                fill="url(#silverGradient)"
+                fill="url(#appleGlassGradient)"
               />
             </AreaChart>
           </ResponsiveContainer>

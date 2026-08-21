@@ -12,14 +12,12 @@ interface LiquidityIndicatorsCardProps {
 export const LiquidityIndicatorsCard: React.FC<LiquidityIndicatorsCardProps> = ({ result }) => {
   const { marketData, config } = result;
 
-  // Calculate current average indicators across dataset
   const latestInterval = marketData[marketData.length - 1] || marketData[0];
   const avgSpread = (marketData.reduce((acc, m) => acc + m.spread, 0) / marketData.length).toFixed(2);
   const avgRelativeSpreadBps = (marketData.reduce((acc, m) => acc + m.relativeSpreadBps, 0) / marketData.length).toFixed(1);
   const avgDepth = Math.round(marketData.reduce((acc, m) => acc + m.orderBookDepth, 0) / marketData.length);
   const avgLiquidityScore = (marketData.reduce((acc, m) => acc + m.volumeLiquidityScore, 0) / marketData.length).toFixed(2);
 
-  // Time-series data for chart
   const chartData = marketData.map((m) => ({
     timeLabel: m.timeLabel,
     score: m.volumeLiquidityScore,
@@ -29,15 +27,15 @@ export const LiquidityIndicatorsCard: React.FC<LiquidityIndicatorsCardProps> = (
   }));
 
   return (
-    <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-5">
+    <div className="apple-glass-panel rounded-3xl p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-cyan-950/80 text-cyan-400 border border-cyan-800/60">
-            <Droplets className="w-5 h-5" />
+          <div className="p-2 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 backdrop-blur-md">
+            <Droplets className="w-4 h-4 stroke-[2.5]" />
           </div>
           <div>
-            <h3 className="font-bold text-white text-base">
+            <h3 className="font-extrabold text-white text-base tracking-tight">
               Microstructure Liquidity Indicators — {config.symbol} Dataset
             </h3>
             <p className="text-xs text-slate-400">
@@ -46,15 +44,15 @@ export const LiquidityIndicatorsCard: React.FC<LiquidityIndicatorsCardProps> = (
           </div>
         </div>
 
-        <span className="px-2.5 py-1 rounded-full bg-white/5 text-slate-300 text-[11px] font-mono border border-white/10">
+        <span className="px-3 py-1 rounded-full apple-glass-pill text-slate-300 text-[11px] font-mono">
           Formula A, B & D Engine
         </span>
       </div>
 
-      {/* 3 Liquidity Indicator Cards */}
+      {/* 3 Liquidity Indicator Glass Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Indicator A: Bid-Ask Spread & Relative Spread */}
-        <div className="bg-[#181924] border border-white/5 rounded-xl p-4 space-y-2">
+        <div className="apple-glass-pill rounded-2xl p-4 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-cyan-400" />
@@ -64,10 +62,10 @@ export const LiquidityIndicatorsCard: React.FC<LiquidityIndicatorsCardProps> = (
           </div>
 
           <div className="flex items-baseline justify-between pt-1">
-            <span className="text-2xl font-extrabold text-white font-mono">
+            <span className="text-2xl font-black text-white font-mono">
               ₹{latestInterval?.spread.toFixed(2)}
             </span>
-            <span className="text-xs font-bold text-cyan-400 font-mono">
+            <span className="text-xs font-extrabold text-cyan-400 font-mono">
               {latestInterval?.relativeSpreadBps} bps
             </span>
           </div>
@@ -79,7 +77,7 @@ export const LiquidityIndicatorsCard: React.FC<LiquidityIndicatorsCardProps> = (
         </div>
 
         {/* Indicator B: Market Depth / Order Book Size */}
-        <div className="bg-[#181924] border border-white/5 rounded-xl p-4 space-y-2">
+        <div className="apple-glass-pill rounded-2xl p-4 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-purple-400" />
@@ -89,10 +87,10 @@ export const LiquidityIndicatorsCard: React.FC<LiquidityIndicatorsCardProps> = (
           </div>
 
           <div className="flex items-baseline justify-between pt-1">
-            <span className="text-2xl font-extrabold text-white font-mono">
+            <span className="text-2xl font-black text-white font-mono">
               {latestInterval?.orderBookDepth.toLocaleString()}
             </span>
-            <span className="text-xs font-bold text-slate-400 font-mono">shares</span>
+            <span className="text-xs font-extrabold text-slate-400 font-mono">shares</span>
           </div>
 
           <div className="text-[11px] text-slate-400 font-mono flex items-center justify-between pt-1 border-t border-white/5">
@@ -102,7 +100,7 @@ export const LiquidityIndicatorsCard: React.FC<LiquidityIndicatorsCardProps> = (
         </div>
 
         {/* Indicator D: Trailing Volume Liquidity Proxy Score */}
-        <div className="bg-[#181924] border border-white/5 rounded-xl p-4 space-y-2">
+        <div className="apple-glass-pill rounded-2xl p-4 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
               <Droplets className="w-3.5 h-3.5 text-emerald-400" />
@@ -112,16 +110,16 @@ export const LiquidityIndicatorsCard: React.FC<LiquidityIndicatorsCardProps> = (
           </div>
 
           <div className="flex items-baseline justify-between pt-1">
-            <span className="text-2xl font-extrabold text-white font-mono">
+            <span className="text-2xl font-black text-white font-mono">
               {latestInterval?.volumeLiquidityScore}x
             </span>
             <span
-              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border backdrop-blur-md ${
                 latestInterval?.liquidityStatus === 'HIGH'
-                  ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                   : latestInterval?.liquidityStatus === 'MODERATE'
-                  ? 'bg-amber-950 text-amber-300 border border-amber-800'
-                  : 'bg-rose-950 text-rose-400 border border-rose-800'
+                  ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                  : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
               }`}
             >
               {latestInterval?.liquidityStatus}
@@ -155,15 +153,16 @@ export const LiquidityIndicatorsCard: React.FC<LiquidityIndicatorsCardProps> = (
         <div className="h-[180px] w-full pt-1">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e2230" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" vertical={false} />
               <XAxis dataKey="timeLabel" stroke="#64748b" tick={{ fontSize: 10 }} />
               <YAxis stroke="#64748b" tick={{ fontSize: 10 }} domain={[0, 'auto']} />
 
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#181a24',
-                  borderColor: 'rgba(255, 255, 255, 0.2)',
-                  borderRadius: '0.75rem',
+                  backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                  backdropFilter: 'blur(20px)',
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
+                  borderRadius: '1rem',
                   fontSize: '12px',
                   color: '#ffffff',
                 }}

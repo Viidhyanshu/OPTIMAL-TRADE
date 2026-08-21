@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { SimulationResult, StrategyType } from '@/lib/engine/types';
-import { Award, Zap, Shield, TrendingDown, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Award, Zap } from 'lucide-react';
 
 interface AssetsTableCardProps {
   result: SimulationResult;
@@ -10,7 +10,6 @@ interface AssetsTableCardProps {
 
 export const AssetsTableCard: React.FC<AssetsTableCardProps> = ({ result }) => {
   const { strategyResults, config } = result;
-
   const strategies: StrategyType[] = ['TWAP', 'VWAP', 'ALMGREN_CHRISS', 'DYNAMIC_ADAPTIVE'];
 
   const sortedByShortfall = [...strategies].sort(
@@ -26,28 +25,35 @@ export const AssetsTableCard: React.FC<AssetsTableCardProps> = ({ result }) => {
   const isBuy = config.side === 'BUY';
 
   return (
-    <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-4">
+    <div className="apple-glass-panel rounded-3xl p-6 space-y-4">
       {/* Table Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
-        <div className="flex items-center gap-2">
-          <Award className="w-5 h-5 text-white" />
-          <h3 className="font-bold text-white text-base">
-            Strategy Execution Performance & Shortfall Matrix
-          </h3>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 backdrop-blur-md">
+            <Award className="w-4 h-4 stroke-[2.5]" />
+          </div>
+          <div>
+            <h3 className="font-extrabold text-white text-base tracking-tight">
+              Strategy Execution Performance & Shortfall Matrix
+            </h3>
+            <p className="text-xs text-slate-400">
+              Quantitative comparison of Implementation Shortfall across algorithms.
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
           <span
-            className={`px-2.5 py-1 rounded-full text-xs font-mono font-bold border ${
+            className={`px-3 py-1 rounded-full text-xs font-mono font-bold border backdrop-blur-md ${
               isBuy
-                ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                : 'bg-rose-950 text-rose-300 border-rose-800'
+                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
             }`}
           >
             {config.side} ORDER
           </span>
 
-          <span className="px-3 py-1 rounded-full bg-emerald-950 text-emerald-400 text-xs font-bold border border-emerald-800 flex items-center gap-1.5 shadow">
+          <span className="px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30 flex items-center gap-1.5 backdrop-blur-md shadow">
             <Zap className="w-3.5 h-3.5 fill-emerald-400" />
             Optimal: {strategyResults[bestStrategy].strategyName}
           </span>
@@ -57,14 +63,14 @@ export const AssetsTableCard: React.FC<AssetsTableCardProps> = ({ result }) => {
       {/* Matrix Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs text-slate-300">
-          <thead className="bg-[#181924] text-[10px] uppercase tracking-wider text-slate-400 font-mono border-b border-white/5">
+          <thead className="apple-glass-pill text-[10px] uppercase tracking-wider text-slate-400 font-mono border-b border-white/10">
             <tr>
-              <th className="py-3 px-3">Execution Strategy</th>
-              <th className="py-3 px-3">Avg Exec Price</th>
-              <th className="py-3 px-3">Impl. Shortfall (₹)</th>
-              <th className="py-3 px-3">Slippage (bps)</th>
-              <th className="py-3 px-3">Market Impact</th>
-              <th className="py-3 px-3">Sharpe Score</th>
+              <th className="py-3.5 px-4 rounded-l-xl">Execution Strategy</th>
+              <th className="py-3.5 px-4">Avg Exec Price</th>
+              <th className="py-3.5 px-4">Impl. Shortfall (₹)</th>
+              <th className="py-3.5 px-4">Slippage (bps)</th>
+              <th className="py-3.5 px-4">Market Impact</th>
+              <th className="py-3.5 px-4 rounded-r-xl">Sharpe Score</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5 font-mono text-[11px]">
@@ -75,37 +81,37 @@ export const AssetsTableCard: React.FC<AssetsTableCardProps> = ({ result }) => {
               return (
                 <tr
                   key={stratKey}
-                  className={`hover:bg-white/5 transition ${isBest ? 'bg-emerald-950/30' : ''}`}
+                  className={`hover:bg-white/5 transition ${isBest ? 'bg-emerald-500/10' : ''}`}
                 >
-                  <td className="py-3 px-3 font-semibold text-white flex items-center gap-2">
+                  <td className="py-3.5 px-4 font-extrabold text-white flex items-center gap-2">
                     {res.strategyName}
                     {isBest && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500 text-black font-extrabold font-sans">
+                      <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-400 text-black font-black font-sans shadow">
                         BEST
                       </span>
                     )}
                   </td>
-                  <td className="py-3 px-3 font-semibold text-white">
+                  <td className="py-3.5 px-4 font-bold text-white">
                     ₹{res.avgExecutionPrice.toFixed(2)}
                   </td>
                   <td
-                    className={`py-3 px-3 font-bold ${
+                    className={`py-3.5 px-4 font-extrabold ${
                       res.implementationShortfall > 0 ? 'text-rose-400' : 'text-emerald-400'
                     }`}
                   >
                     {formatShortfall(res.implementationShortfall)}
                   </td>
                   <td
-                    className={`py-3 px-3 font-bold ${
+                    className={`py-3.5 px-4 font-extrabold ${
                       res.implementationShortfallBps > 0 ? 'text-rose-400' : 'text-emerald-400'
                     }`}
                   >
                     {res.implementationShortfallBps > 0 ? `+${res.implementationShortfallBps}` : res.implementationShortfallBps} bps
                   </td>
-                  <td className="py-3 px-3 text-amber-400 font-semibold">
+                  <td className="py-3.5 px-4 text-amber-300 font-bold">
                     ₹{res.impactCostTotal.toLocaleString()}
                   </td>
-                  <td className="py-3 px-3 text-cyan-400 font-bold">
+                  <td className="py-3.5 px-4 text-cyan-400 font-extrabold">
                     {res.sharpeRatio.toFixed(2)}
                   </td>
                 </tr>

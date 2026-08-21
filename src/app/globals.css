@@ -1,45 +1,77 @@
 @import "tailwindcss";
 
 :root {
-  --background: #07080c;
-  --foreground: #f3f4f6;
-  --card-bg: #0c0d12;
-  --panel-bg: #12131a;
-  --border-color: rgba(255, 255, 255, 0.07);
+  --background: #06070a;
+  --foreground: #f8fafc;
+  --card-bg: rgba(13, 14, 22, 0.75);
+  --panel-bg: rgba(18, 20, 31, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.12);
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
-  background-image: radial-gradient(circle at 50% 0%, rgba(30, 41, 79, 0.25) 0%, rgba(7, 8, 12, 0.95) 70%);
+  background-image: 
+    radial-gradient(circle at 20% 10%, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 80% 50%, rgba(129, 140, 248, 0.10) 0%, transparent 50%),
+    radial-gradient(circle at 40% 90%, rgba(236, 72, 153, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 0%, rgba(15, 23, 42, 0.95) 0%, rgba(6, 7, 10, 1) 100%);
+  background-attachment: fixed;
+}
+
+/* Custom Apple Liquid Glassmorphism */
+.apple-liquid-glass {
+  background: rgba(15, 17, 26, 0.65);
+  backdrop-filter: blur(40px) saturate(190%);
+  -webkit-backdrop-filter: blur(40px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.apple-glass-panel {
+  background: rgba(22, 25, 38, 0.55);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-glass-panel:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.apple-glass-pill {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #07080c;
+  background: rgba(6, 7, 10, 0.8);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1a1c27;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  backdrop-filter: blur(10px);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #282b3d;
-}
-
-/* Glassmorphism panel */
-.glass-container {
-  background: rgba(12, 13, 18, 0.92);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-panel {
-  background: #12131a;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.3);
 }

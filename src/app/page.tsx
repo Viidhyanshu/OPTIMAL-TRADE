@@ -44,15 +44,19 @@ export default function OptimalTradeApp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07080c] text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6">
-      {/* Outer Main Container Card */}
-      <div className="max-w-7xl mx-auto bg-[#0c0d12] border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden">
+    <div className="min-h-screen text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6 relative">
+      {/* Background Liquid Light Mesh Ambient Blobs */}
+      <div className="fixed top-12 left-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-cyan-500/10 via-blue-600/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="fixed bottom-24 right-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-indigo-500/10 via-purple-600/5 to-transparent blur-3xl pointer-events-none" />
+
+      {/* Main Apple Liquid Glass Outer Wrapper Container */}
+      <div className="max-w-7xl mx-auto apple-liquid-glass rounded-[40px] p-5 sm:p-8 shadow-2xl space-y-6 overflow-hidden relative z-10 border border-white/15">
         {/* Header Navbar */}
         <Header />
 
         {/* Main Content Body */}
         <div className="w-full space-y-6">
-          {/* Row 0: Kaggle Multi-Company & 1D/7D/1M/1Y Timeframe Menu Importer */}
+          {/* Row 0: Kaggle Multi-Company Dropdown & Timeframe Importer */}
           <KaggleDataImporter
             selectedStockSymbol={selectedStockSymbol}
             selectedTimeframe={selectedTimeframe}
