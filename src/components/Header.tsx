@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, Sparkles, ShieldAlert, GitBranch } from 'lucide-react';
+import { ArrowRight, ShieldAlert, GitBranch } from 'lucide-react';
 
 interface HeaderProps {
   isShockActive: boolean;
@@ -19,89 +19,94 @@ export const Header: React.FC<HeaderProps> = ({
   setActiveTab,
 }) => {
   return (
-    <header className="w-full px-4 sm:px-8 py-4 flex items-center justify-between z-40">
-      {/* Brand Logo */}
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-          <Sparkles className="w-5 h-5 text-white" />
-        </div>
-        <div className="flex flex-col">
-          <span className="font-extrabold text-lg tracking-tight text-white flex items-center gap-1.5">
-            AI Finance <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 font-mono border border-cyan-800/60">v2.4</span>
-          </span>
-          <span className="text-[10px] text-slate-400 font-medium">Optimal Trade Execution Engine</span>
-        </div>
+    <header className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-5 flex items-center justify-between z-50">
+      {/* Left Logo */}
+      <div className="flex items-center gap-4">
+        <span className="font-sans font-medium text-xl text-white tracking-tight">
+          AI Finance
+        </span>
+
+        {/* Shock Indicator Badge */}
+        {isShockActive && (
+          <button
+            onClick={onToggleShock}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-950/80 border border-amber-600 text-amber-300 text-[11px] font-semibold animate-pulse"
+          >
+            <ShieldAlert className="w-3 h-3 text-amber-400" />
+            <span>Regime Shock Active</span>
+          </button>
+        )}
       </div>
 
-      {/* Top Glass Floating Nav Bar */}
-      <div className="hidden lg:flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#12131b]/90 border border-white/10 backdrop-blur-md shadow-2xl text-xs font-medium text-slate-300">
-        <button
-          onClick={() => setActiveTab('Dashboard')}
-          className={`px-3 py-1.5 rounded-full transition ${
-            activeTab === 'Dashboard' ? 'bg-white/10 text-white font-semibold' : 'hover:text-white'
-          }`}
-        >
-          Dashboard
-        </button>
-        <button
-          onClick={() => setActiveTab('Strategies')}
-          className={`px-3 py-1.5 rounded-full transition ${
-            activeTab === 'Strategies' ? 'bg-white/10 text-white font-semibold' : 'hover:text-white'
-          }`}
-        >
-          Solutions
-        </button>
-        <button
-          onClick={() => setActiveTab('Analytics')}
-          className={`px-3 py-1.5 rounded-full transition ${
-            activeTab === 'Analytics' ? 'bg-white/10 text-white font-semibold' : 'hover:text-white'
-          }`}
-        >
-          Features
-        </button>
-        <button
-          onClick={() => setActiveTab('Audit')}
-          className={`px-3 py-1.5 rounded-full transition ${
-            activeTab === 'Audit' ? 'bg-white/10 text-white font-semibold' : 'hover:text-white'
-          }`}
-        >
-          Services
-        </button>
-      </div>
+      {/* Right Translucent Floating Glass Pill Navigation Bar */}
+      <div className="flex items-center">
+        <div className="flex items-center gap-1 sm:gap-2 p-1.5 rounded-2xl bg-[#141622]/80 border border-white/10 backdrop-blur-xl shadow-2xl">
+          {/* Navigation Links inside container */}
+          <button
+            onClick={() => setActiveTab('Solutions')}
+            className={`px-4 py-2 rounded-xl text-xs font-medium transition ${
+              activeTab === 'Solutions'
+                ? 'text-white bg-white/10 font-semibold'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            Solutions
+          </button>
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-3">
-        <a
-          href="https://github.com/Viidhyanshu/OPTIMAL-TRADE.git"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs font-medium backdrop-blur-sm transition"
-        >
-          <GitBranch className="w-3.5 h-3.5 text-cyan-400" />
-          <span>GitHub</span>
-        </a>
+          <button
+            onClick={() => setActiveTab('Features')}
+            className={`px-4 py-2 rounded-xl text-xs font-medium transition ${
+              activeTab === 'Features'
+                ? 'text-white bg-white/10 font-semibold'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            Features
+          </button>
 
-        <button
-          onClick={onToggleShock}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition ${
-            isShockActive
-              ? 'bg-amber-950/80 border-amber-600 text-amber-300 animate-pulse'
-              : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
-          }`}
-        >
-          <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-          <span>{isShockActive ? 'Shock Active ⚡' : 'Inject Shock'}</span>
-        </button>
+          <button
+            onClick={() => setActiveTab('Services')}
+            className={`px-4 py-2 rounded-xl text-xs font-medium transition ${
+              activeTab === 'Services'
+                ? 'text-white bg-white/10 font-semibold'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            Services
+          </button>
 
-        <button
-          onClick={() => setActiveTab('Dashboard')}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black hover:bg-slate-200 text-xs font-bold shadow-lg transition transform active:scale-95"
-        >
-          <span>Get Started</span>
-          <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center">
-            <ArrowRight className="w-2.5 h-2.5" />
-          </div>
-        </button>
+          <button
+            onClick={() => setActiveTab('Pricing')}
+            className={`px-4 py-2 rounded-xl text-xs font-medium transition ${
+              activeTab === 'Pricing'
+                ? 'text-white bg-white/10 font-semibold'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            Pricing
+          </button>
+
+          <a
+            href="https://github.com/Viidhyanshu/OPTIMAL-TRADE.git"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white transition"
+          >
+            <GitBranch className="w-3.5 h-3.5 text-cyan-400" />
+            <span>GitHub</span>
+          </a>
+
+          {/* Black Pill Get Started Button inside right edge */}
+          <button
+            onClick={() => setActiveTab('Dashboard')}
+            className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-black hover:bg-slate-950 text-white font-medium text-xs border border-white/10 shadow-lg transition transform active:scale-95 ml-1"
+          >
+            <span>Get Started</span>
+            <div className="w-4 h-4 rounded-full bg-white text-black flex items-center justify-center font-bold text-[10px]">
+              <ArrowRight className="w-2.5 h-2.5 stroke-[3]" />
+            </div>
+          </button>
+        </div>
       </div>
     </header>
   );
