@@ -14,7 +14,7 @@ import {
   CartesianGrid,
   ReferenceLine,
 } from 'recharts';
-import { LineChart as LineChartIcon } from 'lucide-react';
+import { LineChart as LineChartIcon, ZoomIn, ZoomOut, RotateCcw, Maximize2, Minimize2 } from 'lucide-react';
 
 interface PriceTrajectoryChartProps {
   result: SimulationResult;
@@ -28,11 +28,15 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
     DYNAMIC_ADAPTIVE: true,
   });
 
+  const { marketData, strategyResults, config } = result;
+  const totalSteps = marketData.length;
+
+  const [range, setRange] = useState<[number, number]>([0, totalSteps]);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
   const toggleStrategy = (strat: StrategyType) => {
     setActiveStrategies((prev) => ({ ...prev, [strat]: !prev[strat] }));
   };
-
-  const { marketData, strategyResults, config } = result;
 
   const chartData = marketData.map((m, idx) => ({
     interval: m.interval,
@@ -48,7 +52,27 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
     DYNAMIC_ADAPTIVE: strategyResults.DYNAMIC_ADAPTIVE.steps[idx]?.executionPrice,
   }));
 
-  const shockStep = config.enableShock ? chartData.find((d) => d.isShock) : null;
+  const visibleData = chartData.slice(range[0], range[1]);
+  const shockStep = config.enableShock ? visibleData.find((d) => d.isShock) : null;
+
+  const handleZoomIn = () => {
+    const currentSpan = range[1] - range[0];
+    if (currentSpan <= 5) return;
+    const mid = Math.floor((range[0] + range[1]) / 2);
+    const newHalf = Math.max(3, Math.floor(currentSpan * 0.3));
+    setRange([Math.max(0, mid - newHalf), Math.min(totalSteps, mid + newHalf)]);
+  };
+
+  const handleZoomOut = () => {
+    const currentSpan = range[1] - range[0];
+    const newHalf = Math.floor(currentSpan * 0.8);
+    const mid = Math.floor((range[0] + range[1]) / 2);
+    setRange([Math.max(0, mid - newHalf), Math.min(totalSteps, mid + newHalf)]);
+  };
+
+  const handleResetZoom = () => {
+    setRange([0, totalSteps]);
+  };
 
   return (
     <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-4">
@@ -61,11 +85,11 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
           </h3>
         </div>
 
-        {/* Strategy Toggles */}
+        {/* Strategy Toggles & Zoom Controls */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
           <button
             onClick={() => toggleStrategy('TWAP')}
-            className={`px-3 py-1 rounded-xl border transition ${
+            className={`px-2.5 py-1 rounded-xl border transition ${
               activeStrategies.TWAP
                 ? 'bg-[#181924] border-amber-500/50 text-amber-300 font-semibold'
                 : 'bg-white/5 border-white/5 text-slate-500 opacity-60'
@@ -75,7 +99,7 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
           </button>
           <button
             onClick={() => toggleStrategy('VWAP')}
-            className={`px-3 py-1 rounded-xl border transition ${
+            className={`px-2.5 py-1 rounded-xl border transition ${
               activeStrategies.VWAP
                 ? 'bg-[#181924] border-purple-500/50 text-purple-300 font-semibold'
                 : 'bg-white/5 border-white/5 text-slate-500 opacity-60'
@@ -85,7 +109,7 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
           </button>
           <button
             onClick={() => toggleStrategy('ALMGREN_CHRISS')}
-            className={`px-3 py-1 rounded-xl border transition ${
+            className={`px-2.5 py-1 rounded-xl border transition ${
               activeStrategies.ALMGREN_CHRISS
                 ? 'bg-[#181924] border-slate-400/50 text-slate-200 font-semibold'
                 : 'bg-white/5 border-white/5 text-slate-500 opacity-60'
@@ -95,7 +119,7 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
           </button>
           <button
             onClick={() => toggleStrategy('DYNAMIC_ADAPTIVE')}
-            className={`px-3 py-1 rounded-xl border transition ${
+            className={`px-2.5 py-1 rounded-xl border transition ${
               activeStrategies.DYNAMIC_ADAPTIVE
                 ? 'bg-[#181924] border-emerald-500 text-emerald-300 font-semibold shadow'
                 : 'bg-white/5 border-white/5 text-slate-500 opacity-60'
@@ -103,13 +127,47 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
           >
             Dynamic Adaptive ★
           </button>
+
+          <div className="h-4 w-px bg-white/10 mx-1" />
+
+          <button
+            onClick={handleZoomIn}
+            title="Zoom In"
+            className="p-1.5 rounded-xl bg-[#181924] hover:bg-white hover:text-black border border-white/5 text-slate-300 transition"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={handleZoomOut}
+            title="Zoom Out"
+            className="p-1.5 rounded-xl bg-[#181924] hover:bg-white hover:text-black border border-white/5 text-slate-300 transition"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={handleResetZoom}
+            title="Reset Zoom"
+            className="p-1.5 rounded-xl bg-[#181924] hover:bg-white hover:text-black border border-white/5 text-slate-300 transition"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            title="Toggle Expand Height"
+            className="p-1.5 rounded-xl bg-[#181924] hover:bg-white hover:text-black border border-white/5 text-slate-300 transition"
+          >
+            {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
       {/* Main Chart Area */}
-      <div className="h-[340px] w-full">
+      <div className={`w-full transition-all duration-300 ${isExpanded ? 'h-[480px]' : 'h-[340px]'}`}>
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <ComposedChart data={visibleData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="midGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#ffffff" stopOpacity={0.15} />
