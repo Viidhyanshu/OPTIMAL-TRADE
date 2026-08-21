@@ -1,4 +1,5 @@
 import { MarketIntervalData, OrderConfig } from './types';
+import rawNiftyData from '../../../public/data/nifty50_kaggle.json';
 
 export type TimeframePeriod = '1D' | '7D' | '1M' | '1Y';
 
@@ -11,24 +12,38 @@ export interface CompanyMetadata {
   volume: number;
 }
 
-export const KAGGLE_COMPANIES_LIST: CompanyMetadata[] = [
-  { symbol: 'RELIANCE', name: 'Reliance Industries Ltd.', exchange: 'NSE', basePrice: 3048.20, sector: 'Energy', volume: 6850000 },
-  { symbol: 'TCS', name: 'Tata Consultancy Services Ltd.', exchange: 'NSE', basePrice: 4218.50, sector: 'IT', volume: 2840000 },
-  { symbol: 'HDFCBANK', name: 'HDFC Bank Ltd.', exchange: 'NSE', basePrice: 1684.30, sector: 'Banking', volume: 12500000 },
-  { symbol: 'INFY', name: 'Infosys Ltd.', exchange: 'NSE', basePrice: 1862.10, sector: 'IT', volume: 4920000 },
-  { symbol: 'TATAMOTORS', name: 'Tata Motors Ltd.', exchange: 'NSE', basePrice: 1092.40, sector: 'Automobile', volume: 8900000 },
-  { symbol: 'ICICIBANK', name: 'ICICI Bank Ltd.', exchange: 'NSE', basePrice: 1215.60, sector: 'Banking', volume: 9800000 },
-  { symbol: 'SBIN', name: 'State Bank of India', exchange: 'NSE', basePrice: 842.10, sector: 'Banking', volume: 14200000 },
-  { symbol: 'BHARTIARTL', name: 'Bharti Airtel Ltd.', exchange: 'NSE', basePrice: 1480.50, sector: 'IT', volume: 5400000 },
-  { symbol: 'HINDUNILVR', name: 'Hindustan Unilever Ltd.', exchange: 'NSE', basePrice: 2750.80, sector: 'FMCG', volume: 1950000 },
-  { symbol: 'ITC', name: 'ITC Ltd.', exchange: 'NSE', basePrice: 512.40, sector: 'FMCG', volume: 11200000 },
-  { symbol: 'KOTAKBANK', name: 'Kotak Mahindra Bank Ltd.', exchange: 'NSE', basePrice: 1795.00, sector: 'Banking', volume: 3800000 },
-  { symbol: 'LT', name: 'Larsen & Toubro Ltd.', exchange: 'NSE', basePrice: 3680.20, sector: 'Infrastructure', volume: 2150000 },
-  { symbol: 'AXISBANK', name: 'Axis Bank Ltd.', exchange: 'NSE', basePrice: 1175.40, sector: 'Banking', volume: 7600000 },
-  { symbol: 'MARUTI', name: 'Maruti Suzuki India Ltd.', exchange: 'NSE', basePrice: 12450.00, sector: 'Automobile', volume: 890000 },
-  { symbol: 'SUNPHARMA', name: 'Sun Pharmaceutical Industries Ltd.', exchange: 'NSE', basePrice: 1720.90, sector: 'FMCG', volume: 3100000 },
-  { symbol: 'NIFTY50', name: 'NIFTY 50 Index Benchmark', exchange: 'NSE', basePrice: 24438.50, sector: 'Index', volume: 25000000 },
-];
+// Dynamic company registry initialized from nifty50_kaggle.json data store
+let dynamicCompaniesStore: CompanyMetadata[] = [...(rawNiftyData as CompanyMetadata[])];
+
+export const KAGGLE_COMPANIES_LIST: CompanyMetadata[] = dynamicCompaniesStore;
+
+/**
+ * Dynamically registers or updates a company in the active dataset store
+ */
+export function registerDynamicCompany(newCompany: CompanyMetadata): void {
+  const existingIdx = dynamicCompaniesStore.findIndex((c) => c.symbol === newCompany.symbol);
+  if (existingIdx >= 0) {
+    dynamicCompaniesStore[existingIdx] = newCompany;
+  } else {
+    dynamicCompaniesStore.push(newCompany);
+  }
+}
+
+/**
+ * Bulk loads dataset records from an external JSON or Kaggle CSV import
+ */
+export function loadDatasetFromJSON(companies: CompanyMetadata[]): void {
+  if (Array.isArray(companies) && companies.length > 0) {
+    dynamicCompaniesStore = [...companies];
+  }
+}
+
+/**
+ * Returns active company list dynamically
+ */
+export function getCompaniesList(): CompanyMetadata[] {
+  return dynamicCompaniesStore;
+}
 
 /**
  * Generates multi-timeframe Kaggle market data for any Indian company across 1D, 7D, 1M, 1Y
@@ -46,7 +61,10 @@ export function getKaggleCompanyData(
   company: CompanyMetadata;
   marketData: MarketIntervalData[];
 } {
-  const company = KAGGLE_COMPANIES_LIST.find((c) => c.symbol === symbol) || KAGGLE_COMPANIES_LIST[0];
+  const company =
+    dynamicCompaniesStore.find((c) => c.symbol === symbol) ||
+    dynamicCompaniesStore[0] ||
+    (rawNiftyData[0] as CompanyMetadata);
 
   let intervalsCount = 30;
   switch (timeframe) {
