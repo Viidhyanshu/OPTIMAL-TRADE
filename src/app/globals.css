@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #e5e7eb;
   --foreground: #090a0f;
   --card-bg: #0a0b10;
   --panel-bg: #0e0f14;
@@ -15,7 +15,7 @@ body {
   overflow-x: hidden;
 }
 
-/* White Background with Crisp Dark Black Grid Lines CSS Pattern */
+/* Whitish-Grey Background with Crisp Dark Black Grid Lines CSS Pattern */
 .bg-grid-pattern {
   background-size: 36px 36px;
   background-image: 
@@ -29,14 +29,14 @@ body {
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: #e5e7eb;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #9ca3af;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #6b7280;
 }
 
 /* Glassmorphism panel */
