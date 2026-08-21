@@ -45,8 +45,8 @@ export default function OptimalTradeApp() {
 
   return (
     <div className="min-h-screen bg-black text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6 relative overflow-hidden">
-      {/* Highly Visible White Noise Shader Dots Overlay Layer */}
-      <div className="fixed inset-0 pointer-events-none opacity-50 mix-blend-screen z-50 bg-repeat bg-noise-shader" />
+      {/* Dynamic Animated White Noise Shader Dots Overlay Layer */}
+      <div className="fixed pointer-events-none opacity-50 mix-blend-screen z-50 bg-repeat bg-noise-shader animate-noise-shader" />
 
       {/* Subtle Monochrome Ambient Radial Lighting Glow */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-white/15 via-slate-800/5 to-transparent blur-3xl pointer-events-none z-0" />
