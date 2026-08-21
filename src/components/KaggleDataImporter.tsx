@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { KAGGLE_COMPANIES_LIST, TimeframePeriod } from '@/lib/engine/kaggleDataStore';
-import { Database, ChevronDown, Search, Table, ExternalLink } from 'lucide-react';
+import { Database, ChevronDown, Search, ExternalLink } from 'lucide-react';
 
 interface KaggleDataImporterProps {
   selectedStockSymbol: string;
@@ -38,14 +38,9 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
             <Database className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-white text-base">
-                Kaggle Indian Stock Market Engine (NIFTY 50)
-              </h3>
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 text-[10px] font-bold border border-emerald-800/60">
-                16 NIFTY COMPANIES LIVE
-              </span>
-            </div>
+            <h3 className="font-bold text-white text-base">
+              Kaggle Indian Stock Market Engine (NIFTY 50)
+            </h3>
             <p className="text-xs text-slate-400">
               Select any Indian company or timeframe (1D, 7D, 1M, 1Y) to stream authentic Kaggle time-series.
             </p>
