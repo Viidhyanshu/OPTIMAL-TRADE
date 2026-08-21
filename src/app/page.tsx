@@ -6,7 +6,6 @@ import { OrderConfig } from '@/lib/engine/types';
 import { TimeframePeriod } from '@/lib/engine/kaggleDataStore';
 import { Header } from '@/components/Header';
 import { MainHeroChartCard } from '@/components/MainHeroChartCard';
-import { QuickSwapCard } from '@/components/QuickSwapCard';
 import { AssetsTableCard } from '@/components/AssetsTableCard';
 import { RepartitionPieCard } from '@/components/RepartitionPieCard';
 import { RegimeShockBanner } from '@/components/RegimeShockBanner';
@@ -19,8 +18,6 @@ import { SolutionsView } from '@/components/SolutionsView';
 import { ControlPanel } from '@/components/ControlPanel';
 import { KaggleDataImporter } from '@/components/KaggleDataImporter';
 import { Footer } from '@/components/Footer';
-import { CustomDataModal } from '@/components/CustomDataModal';
-import { FileUp, BookOpen } from 'lucide-react';
 
 export default function OptimalTradeApp() {
   const [config, setConfig] = useState<OrderConfig>(DEFAULT_CONFIG);
@@ -28,7 +25,6 @@ export default function OptimalTradeApp() {
   const [selectedStockSymbol, setSelectedStockSymbol] = useState<string>('RELIANCE');
   const [selectedTimeframe, setSelectedTimeframe] = useState<TimeframePeriod>('1D');
   const [activeNavTab, setActiveNavTab] = useState<string>('Dashboard');
-  const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
 
   const simulationResult = useMemo(() => {
     return runFullSimulation(config, seed, selectedStockSymbol, selectedTimeframe);
@@ -80,21 +76,11 @@ export default function OptimalTradeApp() {
                 selectedTimeframe={selectedTimeframe}
                 onSelectStock={handleSelectIndianStock}
                 onSelectTimeframe={setSelectedTimeframe}
-                onImportCSV={(text) => handleRunSimulation()}
               />
 
-              {/* Row 1: Hero Chart + Quick Swap */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <MainHeroChartCard result={simulationResult} />
-                </div>
-                <div className="lg:col-span-1">
-                  <QuickSwapCard
-                    config={config}
-                    onChangeConfig={setConfig}
-                    onRunSimulation={handleRunSimulation}
-                  />
-                </div>
+              {/* Row 1: Hero Chart (Full Width) */}
+              <div className="w-full">
+                <MainHeroChartCard result={simulationResult} />
               </div>
 
               {/* Row 2: Control Panel */}
@@ -135,24 +121,6 @@ export default function OptimalTradeApp() {
 
               {/* Row 8: Granular Execution Log Table */}
               <TradeTable result={simulationResult} />
-
-              {/* Report Export Sub-Bar */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-[#12131a] border border-white/5 text-xs text-slate-400">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-white" />
-                  <span>Problem Statement: <strong>Optimal Trade Execution Platform (FinTech Challenge)</strong></span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setIsExportOpen(true)}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs font-medium transition"
-                  >
-                    <FileUp className="w-3.5 h-3.5 text-white" />
-                    <span>Export Simulation Report</span>
-                  </button>
-                </div>
-              </div>
             </>
           )}
         </div>
@@ -160,13 +128,6 @@ export default function OptimalTradeApp() {
         {/* Footer */}
         <Footer setActiveNavTab={setActiveNavTab} />
       </div>
-
-      {/* Export Modal */}
-      <CustomDataModal
-        result={simulationResult}
-        isOpen={isExportOpen}
-        onClose={() => setIsExportOpen(false)}
-      />
     </div>
   );
 }

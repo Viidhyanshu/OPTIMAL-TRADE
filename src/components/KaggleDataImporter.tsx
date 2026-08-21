@@ -1,15 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { KAGGLE_COMPANIES_LIST, TimeframePeriod, CompanyMetadata } from '@/lib/engine/kaggleDataStore';
-import { Database, ChevronDown, Search, Check, Upload, Calendar, Building2, ExternalLink } from 'lucide-react';
+import { KAGGLE_COMPANIES_LIST, TimeframePeriod } from '@/lib/engine/kaggleDataStore';
+import { Database, ChevronDown, Search, Table, ExternalLink } from 'lucide-react';
 
 interface KaggleDataImporterProps {
   selectedStockSymbol: string;
   selectedTimeframe: TimeframePeriod;
   onSelectStock: (symbol: string, basePrice: number) => void;
   onSelectTimeframe: (timeframe: TimeframePeriod) => void;
-  onImportCSV: (csvText: string) => void;
 }
 
 export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
@@ -17,12 +16,10 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
   selectedTimeframe,
   onSelectStock,
   onSelectTimeframe,
-  onImportCSV,
 }) => {
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedSector, setSelectedSector] = useState<string>('ALL');
-  const [csvFileName, setCsvFileName] = useState<string | null>(null);
 
   const activeCompany = KAGGLE_COMPANIES_LIST.find((c) => c.symbol === selectedStockSymbol) || KAGGLE_COMPANIES_LIST[0];
 
@@ -31,21 +28,6 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
     const matchesSector = selectedSector === 'ALL' || c.sector.toLowerCase() === selectedSector.toLowerCase();
     return matchesSearch && matchesSector;
   });
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setCsvFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      if (text) {
-        onImportCSV(text);
-      }
-    };
-    reader.readAsText(file);
-  };
 
   return (
     <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-4">
@@ -61,7 +43,7 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
                 Kaggle Indian Stock Market Engine (NIFTY 50)
               </h3>
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 text-[10px] font-bold border border-emerald-800/60">
-                16 NIFTY COMPANIED LIVE
+                16 NIFTY COMPANIES LIVE
               </span>
             </div>
             <p className="text-xs text-slate-400">
@@ -206,34 +188,6 @@ export const KaggleDataImporter: React.FC<KaggleDataImporterProps> = ({
             {selectedTimeframe === '1D' ? '30 Intraday Slices (NSE Session)' : selectedTimeframe === '7D' ? '7 Trading Days' : selectedTimeframe === '1M' ? '30 Days Period' : '52 Weeks Horizon'}
           </span>
         </div>
-      </div>
-
-      {/* Upload Custom CSV Loader */}
-      <div className="pt-2 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#181924] p-3.5 rounded-xl border border-white/5 text-xs">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-white/10 text-white border border-white/10">
-            <Upload className="w-4 h-4" />
-          </div>
-          <div>
-            <span className="font-bold text-white block">
-              Import Custom Kaggle Dataset (.csv)
-            </span>
-            <p className="text-[10px] text-slate-400">
-              Upload custom Kaggle CSV files for any NIFTY equity to run optimal execution simulation.
-            </p>
-          </div>
-        </div>
-
-        <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-200 text-black font-bold text-xs shadow-lg cursor-pointer transition shrink-0">
-          <Upload className="w-3.5 h-3.5" />
-          <span>{csvFileName ? `Loaded: ${csvFileName}` : 'Choose Kaggle CSV'}</span>
-          <input
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-        </label>
       </div>
     </div>
   );
