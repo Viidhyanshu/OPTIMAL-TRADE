@@ -1,19 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { SimulationResult } from '@/lib/engine/types';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
-import { Database, TrendingUp } from 'lucide-react';
 
 interface MainHeroChartCardProps {
   result: SimulationResult;
 }
 
 export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) => {
-  const [timeframe, setTimeframe] = useState<'1D' | '7D' | '1M' | '1Y'>('1Y');
-
-  const { marketData, strategyResults, config } = result;
-  const adaptiveResult = strategyResults.DYNAMIC_ADAPTIVE;
+  const { marketData, config } = result;
 
   // Chart data loaded directly from Kaggle records
   const chartData = marketData.map((m) => ({
@@ -55,21 +51,6 @@ export const MainHeroChartCard: React.FC<MainHeroChartCardProps> = ({ result }) 
                 {priceChangeBps >= 0 ? '+' : ''}{priceChangeBps}%
               </span>
             </div>
-          </div>
-
-          {/* Timeframe Selector */}
-          <div className="flex items-center gap-1 bg-[#181924] p-1 rounded-xl border border-white/5 text-xs font-medium text-slate-400">
-            {(['1D', '7D', '1M', '1Y'] as const).map((tf) => (
-              <button
-                key={tf}
-                onClick={() => setTimeframe(tf)}
-                className={`px-3 py-1 rounded-lg transition ${
-                  timeframe === tf ? 'bg-white text-black font-bold shadow' : 'hover:text-white'
-                }`}
-              >
-                {tf}
-              </button>
-            ))}
           </div>
         </div>
 
