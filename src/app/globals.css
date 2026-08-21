@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #000000;
-  --foreground: #f3f4f6;
+  --background: #ffffff;
+  --foreground: #090a0f;
   --card-bg: #0a0b10;
   --panel-bg: #0e0f14;
   --border-color: rgba(255, 255, 255, 0.1);
@@ -15,12 +15,12 @@ body {
   overflow-x: hidden;
 }
 
-/* Sleek Pure CSS Grid Pattern Background */
+/* White Background with Black Grid Lines CSS Pattern */
 .bg-grid-pattern {
   background-size: 36px 36px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
 }
 
 /* Custom Scrollbar */
@@ -29,14 +29,14 @@ body {
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #000000;
+  background: #ffffff;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1a1c27;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #282b3d;
+  background: #94a3b8;
 }
 
 /* Glassmorphism panel */
