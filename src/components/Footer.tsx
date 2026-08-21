@@ -10,12 +10,12 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ setActiveNavTab }) => {
   return (
     <footer className="w-full relative mt-16 pt-20 pb-12 border-t border-white/10 overflow-hidden bg-gradient-to-b from-transparent via-[#08090f] to-[#050508]">
-      {/* Ambient Cyan/Blue Lighting Aura */}
-      <div className="absolute top-4 right-8 sm:right-1/4 w-72 sm:w-[450px] h-72 sm:h-[450px] rounded-full bg-gradient-to-br from-cyan-400/25 via-blue-600/15 to-indigo-950/70 blur-3xl pointer-events-none animate-pulse" />
+      {/* Ambient Soft Cyan/Blue Lighting Aura */}
+      <div className="absolute top-4 right-12 sm:right-1/4 w-72 sm:w-[450px] h-72 sm:h-[450px] rounded-full bg-gradient-to-br from-cyan-400/20 via-blue-600/10 to-transparent blur-3xl pointer-events-none animate-pulse" />
 
-      {/* Giant 3D Glowing Indian Rupee (₹) Symbol Graphic replacing the circle */}
-      <div className="absolute -top-4 right-6 sm:right-16 select-none pointer-events-none hidden md:block">
-        <span className="text-[260px] sm:text-[360px] font-black leading-none bg-clip-text text-transparent bg-gradient-to-br from-cyan-300/40 via-blue-500/30 to-indigo-700/10 drop-shadow-[0_0_60px_rgba(6,182,212,0.35)] font-sans">
+      {/* Elegant Thin Indian Rupee (₹) Symbol placed in the exact spot of the circle */}
+      <div className="absolute top-2 right-8 sm:right-1/4 w-72 sm:w-[360px] h-72 sm:h-[360px] flex items-center justify-center pointer-events-none hidden md:flex z-0">
+        <span className="text-[280px] sm:text-[340px] font-extralight leading-none bg-clip-text text-transparent bg-gradient-to-br from-cyan-300/35 via-blue-400/25 to-indigo-600/10 drop-shadow-[0_0_50px_rgba(6,182,212,0.25)] font-sans select-none">
           ₹
         </span>
       </div>
