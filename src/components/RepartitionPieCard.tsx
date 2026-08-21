@@ -18,7 +18,7 @@ export const RepartitionPieCard: React.FC = () => {
         <h3 className="font-sans text-lg font-normal text-white tracking-tight">Repartition</h3>
       </div>
 
-      {/* Pie Chart with Crisp Thin White Outline Borders matching screenshot */}
+      {/* Pie Chart with Crisp Thin White Outline Borders */}
       <div className="h-[185px] w-full relative flex items-center justify-center">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -42,11 +42,14 @@ export const RepartitionPieCard: React.FC = () => {
             <Tooltip
               contentStyle={{
                 backgroundColor: '#181a24',
-                borderColor: '#334155',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
                 borderRadius: '0.75rem',
                 fontSize: '12px',
                 color: '#ffffff',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
               }}
+              itemStyle={{ color: '#ffffff', fontWeight: 600 }}
+              labelStyle={{ color: '#ffffff', fontWeight: 600 }}
               formatter={(val: any) => [`${val}%`, 'Share']}
             />
           </PieChart>

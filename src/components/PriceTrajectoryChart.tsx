@@ -187,11 +187,14 @@ export const PriceTrajectoryChart: React.FC<PriceTrajectoryChartProps> = ({ resu
             <Tooltip
               contentStyle={{
                 backgroundColor: '#181a24',
-                borderColor: '#334155',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
                 borderRadius: '0.75rem',
                 fontSize: '12px',
                 color: '#ffffff',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
               }}
+              itemStyle={{ color: '#ffffff', fontWeight: 600 }}
+              labelStyle={{ color: '#ffffff', fontWeight: 600 }}
               formatter={(value: any, name: any) => [`$${Number(value).toFixed(2)}`, name]}
             />
 
