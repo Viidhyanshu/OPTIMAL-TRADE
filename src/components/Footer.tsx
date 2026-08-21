@@ -9,14 +9,15 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ setActiveNavTab }) => {
   return (
-    <footer className="w-full relative mt-12 pt-12 pb-8 rounded-[32px] overflow-hidden bg-gradient-to-b from-[#0e111d] to-[#07080d] border border-white/10 shadow-2xl">
-      {/* Background 3D Orb Effect */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-cyan-500/10 blur-[100px] pointer-events-none" />
+    <footer className="w-full relative mt-16 pt-16 pb-8 border-t border-white/10 overflow-hidden">
+      {/* Background 3D Metallic Orb Sphere Graphic */}
+      <div className="absolute -top-12 right-12 sm:right-1/4 w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-600/20 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute top-4 right-1/4 w-48 sm:w-64 h-48 sm:h-64 rounded-full bg-gradient-to-tr from-cyan-500/20 via-blue-500/30 to-indigo-600/40 border border-white/10 shadow-[0_0_60px_rgba(6,182,212,0.25)] pointer-events-none hidden md:block" />
 
-      <div className="max-w-6xl mx-auto px-6 sm:px-10 space-y-16 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-20 relative z-10">
         {/* Top Hero CTA Section */}
         <div className="space-y-6 max-w-2xl">
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+          <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
             Grow with AI Finance.<br />
             Start your journey today.
           </h2>
@@ -24,7 +25,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveNavTab }) => {
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <button
               onClick={() => setActiveNavTab('Dashboard')}
-              className="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-black hover:bg-slate-950 text-white font-medium text-xs border border-white/10 shadow-xl transition transform active:scale-95"
+              className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-black hover:bg-slate-950 text-white font-medium text-xs border border-white/10 shadow-2xl transition transform active:scale-95"
             >
               <span>Get Started</span>
               <div className="w-4 h-4 rounded-full bg-white text-black flex items-center justify-center font-bold text-[10px]">
@@ -34,7 +35,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveNavTab }) => {
 
             <button
               onClick={() => setActiveNavTab('Solutions')}
-              className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-xs border border-white/10 backdrop-blur-md transition"
+              className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-xs border border-white/10 backdrop-blur-md transition"
             >
               Learn More
             </button>
@@ -103,7 +104,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveNavTab }) => {
                 </li>
                 <li>
                   <a href="https://github.com/Viidhyanshu/OPTIMAL-TRADE.git" target="_blank" rel="noopener noreferrer" className="hover:text-white transition flex items-center gap-1">
-                    <GitBranch className="w-3 h-3 text-cyan-400" />
+                    <GitBranch className="w-3.5 h-3.5 text-cyan-400" />
                     <span>GitHub</span>
                   </a>
                 </li>

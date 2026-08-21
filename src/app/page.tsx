@@ -45,8 +45,8 @@ export default function OptimalTradeApp() {
 
   return (
     <div className="min-h-screen bg-[#07080c] text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6">
-      {/* Outer Dark Glass Container matching futureoffinance design */}
-      <div className="max-w-7xl mx-auto bg-[#0c0d12] border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6">
+      {/* Outer Main Container Card */}
+      <div className="max-w-7xl mx-auto bg-[#0c0d12] border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden">
         {/* Header Navbar */}
         <Header
           activeNavTab={activeNavTab}
@@ -114,7 +114,7 @@ export default function OptimalTradeApp() {
               {/* Row 8: Granular Execution Log Table */}
               <TradeTable result={simulationResult} />
 
-              {/* Report Export Sub-Footer Bar */}
+              {/* Report Export Sub-Bar */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-[#12131a] border border-white/5 text-xs text-slate-400">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-white" />
@@ -135,7 +135,7 @@ export default function OptimalTradeApp() {
           )}
         </div>
 
-        {/* Footer Section matching exact reference image */}
+        {/* Seamless Full-Bleed Footer */}
         <Footer setActiveNavTab={setActiveNavTab} />
       </div>
 
