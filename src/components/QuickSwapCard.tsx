@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { OrderConfig } from '@/lib/engine/types';
-import { ArrowDownUp, ChevronRight, Play } from 'lucide-react';
+import { ArrowDownUp, ChevronRight, ChevronDown } from 'lucide-react';
 
 interface QuickSwapCardProps {
   config: OrderConfig;
@@ -15,82 +15,79 @@ export const QuickSwapCard: React.FC<QuickSwapCardProps> = ({
   onChangeConfig,
   onRunSimulation,
 }) => {
-  const toggleSide = () => {
-    onChangeConfig({
-      ...config,
-      side: config.side === 'BUY' ? 'SELL' : 'BUY',
-    });
+  const [tokenFrom, setTokenFrom] = useState<'BTC' | 'ETH' | 'USDT'>('BTC');
+  const [tokenTo, setTokenTo] = useState<'USDT' | 'BTC' | 'ETH'>('USDT');
+
+  const toggleSwap = () => {
+    const temp = tokenFrom;
+    setTokenFrom(tokenTo as any);
+    setTokenTo(temp as any);
   };
 
   return (
-    <div className="bg-[#12131b]/90 border border-white/10 rounded-2xl p-5 shadow-2xl space-y-4 flex flex-col justify-between">
+    <div className="bg-[#12131a] border border-white/5 rounded-2xl p-5 shadow-2xl space-y-4 flex flex-col justify-between h-full">
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-white text-base">Quick execution</h3>
-        <span className="text-xs text-slate-400 font-mono">Order Router</span>
+        <h3 className="font-bold text-white text-base">Quick swap</h3>
       </div>
 
-      {/* Input Box 1: Order Quantity & Side */}
-      <div className="bg-[#181a24] border border-white/5 rounded-xl p-3 space-y-1">
-        <div className="flex justify-between items-center text-[11px] text-slate-400">
-          <span>Order Size</span>
-          <span>Balance: 500,000 {config.symbol}</span>
-        </div>
+      {/* Input Box 1 */}
+      <div className="bg-[#181924] border border-white/5 rounded-2xl p-3.5 space-y-1">
         <div className="flex items-center justify-between gap-2">
           <input
-            type="number"
-            value={config.totalQuantity}
-            onChange={(e) => onChangeConfig({ ...config, totalQuantity: Number(e.target.value) })}
-            className="w-full bg-transparent text-lg font-mono font-bold text-white focus:outline-none"
+            type="text"
+            defaultValue="0.00181682"
+            className="w-full bg-transparent text-lg font-mono font-medium text-white focus:outline-none"
           />
-          <button
-            onClick={toggleSide}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-              config.side === 'BUY'
-                ? 'bg-emerald-600/80 text-white border border-emerald-500'
-                : 'bg-rose-600/80 text-white border border-rose-500'
-            }`}
-          >
-            {config.side}
-          </button>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222433] border border-white/5 text-xs text-white font-medium cursor-pointer shrink-0">
+            <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center text-[9px] font-bold text-black">
+              ₿
+            </div>
+            <span>{tokenFrom}</span>
+            <ChevronDown className="w-3 h-3 text-slate-400" />
+          </div>
+        </div>
+        <div className="text-[11px] text-slate-400 font-medium">
+          Balance: 0.01742682 {tokenFrom}
         </div>
       </div>
 
-      {/* Direction Swap Icon */}
+      {/* Swap Center Icon */}
       <div className="flex justify-center -my-2 z-10">
         <button
-          onClick={toggleSide}
-          className="p-2 rounded-full bg-[#1e202e] border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition shadow-lg"
+          onClick={toggleSwap}
+          className="p-2 rounded-full bg-[#1c1e2b] border border-white/10 text-slate-300 hover:text-white transition shadow-lg"
         >
           <ArrowDownUp className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Input Box 2: Arrival Price & Strategy Parameter */}
-      <div className="bg-[#181a24] border border-white/5 rounded-xl p-3 space-y-1">
-        <div className="flex justify-between items-center text-[11px] text-slate-400">
-          <span>Arrival Price ($)</span>
-          <span>Risk &lambda;: {config.riskAversion}</span>
-        </div>
+      {/* Input Box 2 */}
+      <div className="bg-[#181924] border border-white/5 rounded-2xl p-3.5 space-y-1">
         <div className="flex items-center justify-between gap-2">
           <input
-            type="number"
-            step="0.5"
-            value={config.arrivalPrice}
-            onChange={(e) => onChangeConfig({ ...config, arrivalPrice: Number(e.target.value) })}
-            className="w-full bg-transparent text-lg font-mono font-bold text-white focus:outline-none"
+            type="text"
+            defaultValue="193.4604"
+            className="w-full bg-transparent text-lg font-mono font-medium text-white focus:outline-none"
           />
-          <span className="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-slate-300 font-mono">
-            USD
-          </span>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222433] border border-white/5 text-xs text-white font-medium cursor-pointer shrink-0">
+            <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-[9px] font-bold text-black">
+              T
+            </div>
+            <span>{tokenTo}</span>
+            <ChevronDown className="w-3 h-3 text-slate-400" />
+          </div>
+        </div>
+        <div className="text-[11px] text-slate-400 font-medium">
+          Balance: 500 {tokenTo}
         </div>
       </div>
 
-      {/* Action Button */}
+      {/* Full width dark action button */}
       <button
         onClick={onRunSimulation}
-        className="w-full py-3 rounded-xl bg-[#181a24] hover:bg-white hover:text-black border border-white/10 font-bold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg"
+        className="w-full py-3 rounded-2xl bg-[#181924] hover:bg-white hover:text-black border border-white/10 font-medium text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg mt-1"
       >
-        <span>Visualize execution</span>
+        <span>Visualize swap</span>
         <ChevronRight className="w-4 h-4" />
       </button>
     </div>
