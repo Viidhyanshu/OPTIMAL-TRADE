@@ -44,9 +44,15 @@ export default function OptimalTradeApp() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6">
+    <div className="min-h-screen bg-black text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6 relative overflow-hidden">
+      {/* High-Performance Fixed Noisy Shader Overlay Layer */}
+      <div className="fixed inset-0 pointer-events-none opacity-25 mix-blend-overlay z-50 bg-repeat bg-noise-shader" />
+
+      {/* Subtle Monochrome Ambient Radial Lighting Glow */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-white/10 via-slate-800/5 to-transparent blur-3xl pointer-events-none z-0" />
+
       {/* Outer Main Container Card - Sleek Monochrome Dark Black */}
-      <div className="max-w-7xl mx-auto bg-[#0a0b10] border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden">
+      <div className="max-w-7xl mx-auto bg-[#0a0b10]/95 border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden relative z-10">
         {/* Header Navbar */}
         <Header />
 
