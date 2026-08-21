@@ -18,7 +18,6 @@ import { BottomCards } from '@/components/BottomCards';
 import { ControlPanel } from '@/components/ControlPanel';
 import { KaggleDataImporter } from '@/components/KaggleDataImporter';
 import { Footer } from '@/components/Footer';
-import GradientWaves from '@/components/GradientWaves';
 
 export default function OptimalTradeApp() {
   const [config, setConfig] = useState<OrderConfig>(DEFAULT_CONFIG);
@@ -46,33 +45,13 @@ export default function OptimalTradeApp() {
 
   return (
     <div className="min-h-screen bg-black text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6 relative overflow-hidden">
-      {/* React-Bits GradientWaves Full Screen WebGL Shader */}
-      <div className="fixed inset-0 pointer-events-none z-0 w-screen h-screen opacity-70 mix-blend-screen overflow-hidden">
-        <GradientWaves
-          horizonColor="#5227FF"
-          waveColor="#FF9FFC"
-          crestColor="#FFFFFF"
-          speed={0.4}
-          amplitude={2.5}
-          waveScale={0.6}
-          waveRatio={0.9}
-          swell={35}
-          turbulence={20}
-          tilt={1.11}
-          zoom={1}
-          height={5.5}
-          fogDepth={15}
-          detail="medium"
-          brightness={1}
-          opacity={1}
-          mouseInteraction={false}
-          parallaxStrength={0}
-          grain
-          grainIntensity={0.05}
-        />
-      </div>
+      {/* Sleek Pure CSS Grid Pattern Background Layer */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-grid-pattern opacity-80" />
 
-      {/* Outer Main Container Card - Sleek Monochrome Dark Black (z-10 above background GradientWaves shader) */}
+      {/* Subtle Radial Gradient Vignette Mask fading grid into black edges */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#000000_90%)]" />
+
+      {/* Outer Main Container Card - Sleek Monochrome Dark Black (z-10 above CSS grid) */}
       <div className="max-w-7xl mx-auto bg-[#0a0b10]/95 border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden relative z-10">
         {/* Header Navbar */}
         <Header />
