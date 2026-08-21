@@ -9,7 +9,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = () => {
   return (
-    <footer className="w-full relative mt-16 pt-16 pb-8 border-t border-white/10 overflow-hidden">
+    <footer className="w-full relative mt-16 pt-16 pb-8 overflow-hidden">
       {/* Ambient Soft Cyan/Blue Aura */}
       <div className="absolute top-4 right-12 sm:right-1/4 w-72 sm:w-[450px] h-72 sm:h-[450px] rounded-full bg-gradient-to-br from-cyan-400/20 via-blue-600/10 to-transparent blur-3xl pointer-events-none" />
 
@@ -29,8 +29,8 @@ export const Footer: React.FC<FooterProps> = () => {
           </h2>
         </div>
 
-        {/* Bottom Columns Section matching reference image */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-8 pt-8 border-t border-white/10">
+        {/* Bottom Columns Section without border lines */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-8 pt-8">
           {/* Left Brand & Contact Info */}
           <div className="space-y-1.5">
             <h3 className="font-sans font-medium text-xl text-white tracking-tight">
