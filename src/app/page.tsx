@@ -9,6 +9,7 @@ import { MainHeroChartCard } from '@/components/MainHeroChartCard';
 import { AssetsTableCard } from '@/components/AssetsTableCard';
 import { RepartitionPieCard } from '@/components/RepartitionPieCard';
 import { LiquidityIndicatorsCard } from '@/components/LiquidityIndicatorsCard';
+import { VolatilityIndicatorsCard } from '@/components/VolatilityIndicatorsCard';
 import { PriceTrajectoryChart } from '@/components/PriceTrajectoryChart';
 import { SliceBreakdownChart } from '@/components/SliceBreakdownChart';
 import { TradeTable } from '@/components/TradeTable';
@@ -71,10 +72,13 @@ export default function OptimalTradeApp() {
             onRunSimulation={handleRunSimulation}
           />
 
-          {/* Row 3: User-Specified Liquidity Indicators Component (Formulas A, B, and D) */}
+          {/* Row 3: User Volatility Indicators Component (Formulas A, B, C, D) */}
+          <VolatilityIndicatorsCard result={simulationResult} />
+
+          {/* Row 4: User Liquidity Indicators Component (Formulas A, B, D) */}
           <LiquidityIndicatorsCard result={simulationResult} />
 
-          {/* Row 4: Price Trajectory & Efficient Frontier */}
+          {/* Row 5: Price Trajectory & Efficient Frontier */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <PriceTrajectoryChart result={simulationResult} />
@@ -84,7 +88,7 @@ export default function OptimalTradeApp() {
             </div>
           </div>
 
-          {/* Row 5: Assets Table + Repartition Pie */}
+          {/* Row 6: Assets Table + Repartition Pie */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <AssetsTableCard result={simulationResult} />
@@ -94,13 +98,13 @@ export default function OptimalTradeApp() {
             </div>
           </div>
 
-          {/* Row 6: Bottom Grid Cards (Recent Transactions, Market) */}
+          {/* Row 7: Bottom Grid Cards (Recent Transactions, Market) */}
           <BottomCards />
 
-          {/* Row 7: Trade Slicing Distribution Bar Chart */}
+          {/* Row 8: Trade Slicing Distribution Bar Chart */}
           <SliceBreakdownChart result={simulationResult} />
 
-          {/* Row 8: Granular Execution Log Table */}
+          {/* Row 9: Granular Execution Log Table */}
           <TradeTable result={simulationResult} />
         </div>
 

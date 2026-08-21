@@ -1,8 +1,5 @@
 import { MarketIntervalData, OrderConfig } from './types';
 
-/**
- * Geometric Brownian Motion generator with intraday U-shaped volume profile & user liquidity indicators
- */
 export function generateMarketData(config: OrderConfig, seed: number = 42): MarketIntervalData[] {
   const N = config.totalIntervals;
   const basePrice = config.arrivalPrice;
@@ -34,6 +31,9 @@ export function generateMarketData(config: OrderConfig, seed: number = 42): Mark
     currentPrice = Math.max(1.0, currentPrice + priceMove);
 
     const midPrice = Number(currentPrice.toFixed(2));
+    const highPrice = Number((midPrice * 1.004).toFixed(2));
+    const lowPrice = Number((midPrice * 0.996).toFixed(2));
+
     const spread_t = Number(((midPrice * spreadBps) / 10000).toFixed(3));
     const relative_spread_t = Number((spread_t / midPrice).toFixed(6));
     const relativeSpreadBps = Number((relative_spread_t * 10000).toFixed(2));
@@ -62,6 +62,14 @@ export function generateMarketData(config: OrderConfig, seed: number = 42): Mark
       midPrice,
       bidPrice: Number((midPrice - spread_t / 2).toFixed(2)),
       askPrice: Number((midPrice + spread_t / 2).toFixed(2)),
+      highPrice,
+      lowPrice,
+      logReturn: 0.001,
+      realizedVol: Number(currentVol.toFixed(4)),
+      ewmaVol: Number((currentVol * 1.05).toFixed(4)),
+      garchVol: Number((currentVol * 1.08).toFixed(4)),
+      parkinsonVol: Number((currentVol * 0.95).toFixed(4)),
+      isVolElevated: isShock,
       spread: spread_t,
       relativeSpread: relative_spread_t,
       relativeSpreadBps,

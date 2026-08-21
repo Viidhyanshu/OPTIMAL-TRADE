@@ -22,6 +22,18 @@ export interface MarketIntervalData {
   midPrice: number;
   bidPrice: number;
   askPrice: number;
+  highPrice: number;             // High_t
+  lowPrice: number;              // Low_t
+  logReturn: number;             // returns_t = ln(price_t / price_(t-1))
+  
+  // User Volatility Indicators A, B, C, D
+  realizedVol: number;           // Formula A: Rolling Std Dev of Log Returns
+  ewmaVol: number;               // Formula B: EWMA Volatility (lambda = 0.94)
+  garchVol: number;              // Formula C: GARCH(1,1) Forward Estimate
+  parkinsonVol: number;          // Formula D: Parkinson High-Low Range Volatility
+  isVolElevated: boolean;        // Regime Detection Trigger (vol > 2.0x baseline)
+  
+  // User Liquidity Indicators A, B, D
   spread: number;                // spread_t = ask_price_t - bid_price_t
   relativeSpread: number;        // relative_spread_t = spread_t / mid_price_t
   relativeSpreadBps: number;     // relative spread in basis points (bps)
