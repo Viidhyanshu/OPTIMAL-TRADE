@@ -44,14 +44,14 @@ export default function OptimalTradeApp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#e5e7eb] text-slate-100 font-sans antialiased selection:bg-black selection:text-white py-4 px-3 sm:px-6 relative overflow-hidden">
-      {/* Sleek Pure CSS Dark Black Grid Pattern Background Layer on Whitish-Grey */}
+    <div className="min-h-screen bg-[#161720] text-slate-100 font-sans antialiased selection:bg-white selection:text-black py-4 px-3 sm:px-6 relative overflow-hidden">
+      {/* Dim Dark Slate CSS Grid Pattern Background Layer */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-grid-pattern opacity-100" />
 
-      {/* Subtle Radial Gradient Vignette Mask fading grid into whitish-grey edges */}
-      <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,#e5e7eb_95%)]" />
+      {/* Subtle Radial Gradient Vignette Mask fading grid into dim slate edges */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,#161720_95%)]" />
 
-      {/* Outer Main Container Card - Sleek Dark Black Container (z-10 above whitish-grey grid) */}
+      {/* Outer Main Container Card - Sleek Dark Black Container (z-10 above dim grid) */}
       <div className="max-w-7xl mx-auto bg-[#0a0b10] border border-white/10 rounded-[32px] p-5 sm:p-7 shadow-2xl backdrop-blur-2xl space-y-6 overflow-hidden relative z-10">
         {/* Header Navbar */}
         <Header />
