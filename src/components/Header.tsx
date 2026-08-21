@@ -8,7 +8,7 @@ export const Header: React.FC = () => {
       {/* Brand Title */}
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-xl bg-white text-black font-extrabold flex items-center justify-center text-xs shadow-lg">
-          AI
+          OT
         </div>
         <div>
           <h1 className="text-lg font-bold text-white tracking-tight">OPTIMAL TRADE</h1>

@@ -23,7 +23,7 @@ export const Footer: React.FC<FooterProps> = () => {
         {/* Top Hero Heading */}
         <div className="space-y-4 max-w-2xl">
           <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.08]">
-            Grow with AI Finance.<br />
+            Grow with Optimal Trade.<br />
             Start your journey today.
           </h2>
         </div>
@@ -33,10 +33,10 @@ export const Footer: React.FC<FooterProps> = () => {
           {/* Left Brand & Contact Info */}
           <div className="space-y-1.5">
             <h3 className="font-sans font-medium text-xl text-white tracking-tight">
-              AI Finance
+              Optimal Trade
             </h3>
             <p className="text-xs text-slate-400 font-mono">
-              contact@ai-finance.com
+              contact@optimal-trade.com
             </p>
           </div>
         </div>
