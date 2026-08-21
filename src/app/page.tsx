@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { DEFAULT_CONFIG, runFullSimulation } from '@/lib/engine/runner';
 import { OrderConfig } from '@/lib/engine/types';
+import { TimeframePeriod } from '@/lib/engine/kaggleDataStore';
 import { Header } from '@/components/Header';
 import { MainHeroChartCard } from '@/components/MainHeroChartCard';
 import { QuickSwapCard } from '@/components/QuickSwapCard';
@@ -25,12 +26,13 @@ export default function OptimalTradeApp() {
   const [config, setConfig] = useState<OrderConfig>(DEFAULT_CONFIG);
   const [seed, setSeed] = useState<number>(42);
   const [selectedStockSymbol, setSelectedStockSymbol] = useState<string>('RELIANCE');
+  const [selectedTimeframe, setSelectedTimeframe] = useState<TimeframePeriod>('1D');
   const [activeNavTab, setActiveNavTab] = useState<string>('Dashboard');
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
 
   const simulationResult = useMemo(() => {
-    return runFullSimulation(config, seed, selectedStockSymbol);
-  }, [config, seed, selectedStockSymbol]);
+    return runFullSimulation(config, seed, selectedStockSymbol, selectedTimeframe);
+  }, [config, seed, selectedStockSymbol, selectedTimeframe]);
 
   const handleRunSimulation = () => {
     setSeed(Math.floor(Math.random() * 100000));
@@ -72,10 +74,12 @@ export default function OptimalTradeApp() {
             <SolutionsView tab={activeNavTab} />
           ) : (
             <>
-              {/* Row 0: Kaggle Indian Stock Data Importer */}
+              {/* Row 0: Kaggle Multi-Company & 1D/7D/1M/1Y Timeframe Menu Importer */}
               <KaggleDataImporter
                 selectedStockSymbol={selectedStockSymbol}
+                selectedTimeframe={selectedTimeframe}
                 onSelectStock={handleSelectIndianStock}
+                onSelectTimeframe={setSelectedTimeframe}
                 onImportCSV={(text) => handleRunSimulation()}
               />
 
@@ -153,7 +157,7 @@ export default function OptimalTradeApp() {
           )}
         </div>
 
-        {/* Seamless Full-Bleed Footer */}
+        {/* Footer */}
         <Footer setActiveNavTab={setActiveNavTab} />
       </div>
 

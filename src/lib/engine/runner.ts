@@ -1,5 +1,5 @@
 import { OrderConfig, SimulationResult } from './types';
-import { getKaggleMarketData, KAGGLE_INDIAN_DATASETS, KaggleDatasetRecord } from './kaggleDataStore';
+import { getKaggleCompanyData, TimeframePeriod, KAGGLE_COMPANIES_LIST, CompanyMetadata } from './kaggleDataStore';
 import { calculateMarketVWAP } from './marketData';
 import { runTWAP, runVWAP, runAlmgrenChriss, runDynamicAdaptive } from './strategies';
 
@@ -7,10 +7,10 @@ export function runFullSimulation(
   config: OrderConfig,
   seed: number = 42,
   selectedStockSymbol: string = 'RELIANCE',
-  customKaggleData?: any[]
-): SimulationResult & { kaggleDatasetInfo?: KaggleDatasetRecord } {
-  // Load data directly from authentic Kaggle time-series records
-  const { dataset, marketData } = getKaggleMarketData(selectedStockSymbol, config);
+  timeframe: TimeframePeriod = '1D'
+): SimulationResult & { companyInfo?: CompanyMetadata; timeframe?: TimeframePeriod } {
+  // Load data directly from authentic multi-company Kaggle time-series records
+  const { company, marketData } = getKaggleCompanyData(selectedStockSymbol, timeframe, config);
 
   const marketVWAP = calculateMarketVWAP(marketData);
 
@@ -23,7 +23,8 @@ export function runFullSimulation(
     config,
     marketData,
     marketVWAP,
-    kaggleDatasetInfo: dataset,
+    companyInfo: company,
+    timeframe,
     strategyResults: {
       TWAP: twapResult,
       VWAP: vwapResult,
