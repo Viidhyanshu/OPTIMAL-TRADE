@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, GitBranch, Sparkles, Shield, Mail, Globe, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, GitBranch, Sparkles, Shield, Mail, ArrowUpRight } from 'lucide-react';
 
 interface FooterProps {
   setActiveNavTab?: (tab: string) => void;
@@ -10,13 +10,14 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ setActiveNavTab }) => {
   return (
     <footer className="w-full relative mt-16 pt-20 pb-12 border-t border-white/10 overflow-hidden bg-gradient-to-b from-transparent via-[#08090f] to-[#050508]">
-      {/* 3D Glowing Metallic Glass Sphere & Ambient Lighting Effect */}
-      <div className="absolute top-8 right-8 sm:right-1/4 w-72 sm:w-[420px] h-72 sm:h-[420px] rounded-full bg-gradient-to-br from-cyan-400/30 via-blue-600/20 to-indigo-950/80 blur-3xl pointer-events-none animate-pulse" />
-      
-      {/* 3D Orb Graphic with Metallic Rim Light */}
-      <div className="absolute top-6 right-10 sm:right-1/4 w-60 sm:w-[340px] h-60 sm:h-[340px] rounded-full bg-gradient-to-tr from-blue-700/40 via-cyan-500/30 to-indigo-900/60 border border-white/20 shadow-[0_0_80px_rgba(6,182,212,0.35)] pointer-events-none hidden md:block backdrop-blur-md">
-        <div className="absolute inset-0 rounded-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/30 via-transparent to-black/60" />
-        <div className="absolute top-6 right-8 w-24 h-24 rounded-full bg-white/20 blur-xl" />
+      {/* Ambient Cyan/Blue Lighting Aura */}
+      <div className="absolute top-4 right-8 sm:right-1/4 w-72 sm:w-[450px] h-72 sm:h-[450px] rounded-full bg-gradient-to-br from-cyan-400/25 via-blue-600/15 to-indigo-950/70 blur-3xl pointer-events-none animate-pulse" />
+
+      {/* Giant 3D Glowing Indian Rupee (₹) Symbol Graphic replacing the circle */}
+      <div className="absolute -top-4 right-6 sm:right-16 select-none pointer-events-none hidden md:block">
+        <span className="text-[260px] sm:text-[360px] font-black leading-none bg-clip-text text-transparent bg-gradient-to-br from-cyan-300/40 via-blue-500/30 to-indigo-700/10 drop-shadow-[0_0_60px_rgba(6,182,212,0.35)] font-sans">
+          ₹
+        </span>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-20 relative z-10">
